@@ -239,13 +239,18 @@ async function loadQuestion(){
     const res=await fetch('https://twilight-shape-f58c.kmimseo1203.workers.dev/',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({grade:g.label,type:curType})
+      body:JSON.stringify({grade:g.label, type:curType})
     });
-    const data=await res.json();
-    const q=JSON.parse(data.content[0].text.trim().replace(/```json|```/g,'').trim());
+    
+    // 이 부분이 핵심 수정 사항입니다!
+    const q = await res.json();
+    
+    if(q.error) throw new Error(q.error);
+    
     renderQ(q);
   }catch(e){
-    document.getElementById('question-text').textContent='문제를 불러오지 못했어요. 다시 눌러주세요.';
+    console.error(e);
+    document.getElementById('question-text').textContent='문제를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
     document.getElementById('next-btn').style.display='block';
     document.getElementById('next-btn').textContent='다시 시도';
   }
@@ -258,7 +263,7 @@ function renderQ(q){
   window._curSteps=q.steps||[];
   window._curConcept=q.concept||'';
 
-  if(curType==='mcq'&&q.options){
+  if(curType==='mcq' && q.options){
     curAnswer=q.answer;
     const list=document.getElementById('options-list');
     q.options.forEach((opt,i)=>{
@@ -283,7 +288,7 @@ function pickOpt(idx,q,btn){
   total++;
   btn.className='opt-btn '+(ok?'sel-correct':'sel-wrong');
   if(!ok)document.querySelectorAll('.opt-btn')[q.answer].className='opt-btn show-correct';
-  resolve(ok,q.options[q.answer]);
+  resolve(ok, q.options[q.answer]);
 }
 
 function submitAnswer(){
