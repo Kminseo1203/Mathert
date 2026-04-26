@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' http://dc.wrd.kr:26359; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' https://cdn.jsdelivr.net;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수학 퀴즈</title>
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+:root{--bg:#f8f9fa;--white:#ffffff;--blue:#3182f6;--blue-light:#ebf3fe;--blue-dark:#1b64da;--green:#00c471;--green-light:#e5f9f1;--red:#f04452;--red-light:#fff0f1;--yellow:#ff8c00;--text-primary:#191f28;--text-secondary:#6b7684;--text-tertiary:#b0b8c1;--border:#e5e8eb;--shadow-sm:0 1px 4px rgba(0,0,0,0.06);--shadow-md:0 4px 16px rgba(0,0,0,0.08);--radius-sm:10px;--radius-md:16px;--radius-xl:24px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-apple-system,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+.app{max-width:480px;margin:0 auto;padding-bottom:80px;min-height:100vh;}
+
+/* NAV */
+.nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-title{font-size:17px;font-weight:700;letter-spacing:-0.3px;}
+.nav-left{display:flex;align-items:center;gap:8px;}
+.nav-back{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;border-radius:50%;font-size:18px;color:var(--text-primary);}
+.nav-back:hover{background:var(--bg);}
+
+/* USER CHIP */
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px 5px 6px;cursor:pointer;transition:all 0.15s;}
+.user-chip:hover{border-color:var(--blue);}
+.user-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;}
+.user-avatar-placeholder{width:26px;height:26px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
+.user-name{font-size:13px;font-weight:600;color:var(--text-primary);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.login-btn{background:var(--white);border:1.5px solid var(--border);border-radius:999px;padding:7px 14px;font-family:inherit;font-size:13px;font-weight:600;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
+.login-btn:hover{border-color:var(--blue);color:var(--blue);}
+
+/* STATS */
+.stats-banner{background:var(--white);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;}
+.stat-item{flex:1;text-align:center;}
+.stat-item+.stat-item{border-left:1px solid var(--border);}
+.stat-label{font-size:11px;font-weight:500;color:var(--text-tertiary);margin-bottom:4px;}
+.stat-value{font-size:20px;font-weight:800;letter-spacing:-0.5px;line-height:1;}
+.stat-value.blue{color:var(--blue);}.stat-value.green{color:var(--green);}.stat-value.orange{color:var(--yellow);}
+
+/* TABS */
+.tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);}
+.tab-btn{flex:1;padding:14px;font-family:inherit;font-size:14px;font-weight:600;color:var(--text-tertiary);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
+
+/* SCREENS */
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* SETUP */
+.section{padding:24px 20px 0;}
+.section-label{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:12px;}
+.quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.chip{background:var(--white);border:1.5px solid var(--border);border-radius:999px;padding:7px 16px;font-size:13px;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:all 0.15s;font-family:inherit;}
+.chip:hover{border-color:var(--blue);color:var(--blue);}
+.grade-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.grade-btn{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 8px;font-family:inherit;font-size:14px;font-weight:700;color:var(--text-secondary);cursor:pointer;transition:all 0.15s;text-align:center;box-shadow:var(--shadow-sm);}
+.grade-btn:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-1px);}
+.grade-btn.selected{background:var(--blue-light);border-color:var(--blue);color:var(--blue);}
+.cta-section{padding:20px 20px 0;}
+.cta-btn{width:100%;background:var(--blue);border:none;border-radius:var(--radius-md);padding:18px;color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(49,130,246,0.28);}
+.cta-btn:hover:not(:disabled){background:var(--blue-dark);transform:translateY(-1px);}
+.cta-btn:disabled{background:var(--border);color:var(--text-tertiary);box-shadow:none;cursor:not-allowed;}
+
+/* QUIZ */
+.quiz-wrap{padding:20px 20px 0;}
+.quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.grade-pill{background:var(--blue-light);color:var(--blue);border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;}
+.unit-text{font-size:12px;color:var(--text-tertiary);font-weight:500;}
+.question-card{background:var(--white);border-radius:var(--radius-xl);padding:28px 24px 24px;box-shadow:var(--shadow-md);margin-bottom:16px;border:2px solid transparent;transition:border-color 0.3s,box-shadow 0.3s;}
+.question-card.correct{border-color:var(--green);box-shadow:0 4px 20px rgba(0,196,113,0.15);}
+.question-card.wrong{border-color:var(--red);box-shadow:0 4px 20px rgba(240,68,82,0.12);}
+.question-num{font-size:12px;font-weight:700;color:var(--text-tertiary);margin-bottom:14px;}
+.question-text{font-size:17px;font-weight:600;color:var(--text-primary);line-height:1.65;min-height:72px;letter-spacing:-0.2px;}
+.options-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.opt-btn{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;font-family:inherit;font-size:15px;font-weight:600;color:var(--text-primary);cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;transition:all 0.15s;box-shadow:var(--shadow-sm);line-height:1.45;}
+.opt-btn:hover:not(:disabled){border-color:var(--blue);background:var(--blue-light);color:var(--blue);transform:translateY(-1px);}
+.opt-btn .num{width:26px;height:26px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;transition:all 0.15s;}
+.opt-btn:hover:not(:disabled) .num{background:var(--blue);color:#fff;}
+.opt-btn.sel-correct{border-color:var(--green);background:var(--green-light);color:#007a47;}
+.opt-btn.sel-correct .num{background:var(--green);color:#fff;}
+.opt-btn.sel-wrong{border-color:var(--red);background:var(--red-light);color:var(--red);}
+.opt-btn.sel-wrong .num{background:var(--red);color:#fff;}
+.opt-btn.show-correct{border-color:var(--green);background:var(--green-light);color:#007a47;}
+.opt-btn.show-correct .num{background:var(--green);color:#fff;}
+.opt-btn:disabled{cursor:not-allowed;}
+.input-row{display:flex;gap:10px;margin-bottom:16px;}
+.ans-input{flex:1;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;font-family:inherit;font-size:16px;font-weight:700;color:var(--text-primary);outline:none;transition:border-color 0.2s,box-shadow 0.2s;box-shadow:var(--shadow-sm);}
+.ans-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(49,130,246,0.12);}
+.ans-input.correct{border-color:var(--green);color:#007a47;}
+.ans-input.wrong{border-color:var(--red);color:var(--red);}
+.confirm-btn{background:var(--blue);border:none;border-radius:var(--radius-md);padding:16px 22px;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.confirm-btn:hover:not(:disabled){background:var(--blue-dark);}
+.confirm-btn:disabled{background:var(--border);color:var(--text-tertiary);cursor:not-allowed;}
+.feedback{border-radius:var(--radius-md);padding:16px 18px;margin-bottom:16px;display:none;font-size:14px;font-weight:500;line-height:1.65;color:var(--text-secondary);}
+.feedback.show{display:block;}
+.feedback.correct{background:var(--green-light);}
+.feedback.wrong{background:var(--red-light);}
+.feedback-top{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;margin-bottom:6px;}
+.feedback.correct .feedback-top{color:#007a47;}
+.feedback.wrong .feedback-top{color:var(--red);}
+.action-row{display:flex;gap:10px;padding:0 20px;margin-top:4px;}
+.action-next{flex:1;background:var(--blue);border:none;border-radius:var(--radius-md);padding:18px;color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none;box-shadow:0 4px 14px rgba(49,130,246,0.25);}
+.action-next:hover{background:var(--blue-dark);transform:translateY(-1px);}
+.action-back{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:18px;color:var(--text-secondary);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.action-back:hover{border-color:var(--blue);color:var(--blue);}
+
+/* RANKING */
+.ranking-wrap{padding:20px;}
+.ranking-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.ranking-title{font-size:16px;font-weight:700;}
+.refresh-btn{background:none;border:1.5px solid var(--border);border-radius:999px;padding:6px 14px;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-secondary);cursor:pointer;}
+.refresh-btn:hover{border-color:var(--blue);color:var(--blue);}
+.rank-card{background:var(--white);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm);border:1.5px solid var(--border);}
+.rank-card.me{border-color:var(--blue);background:var(--blue-light);}
+.rank-num{font-size:18px;font-weight:800;width:28px;text-align:center;flex-shrink:0;}
+.rank-num.gold{color:#f5a623;}
+.rank-num.silver{color:#9b9b9b;}
+.rank-num.bronze{color:#c87533;}
+.rank-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.rank-avatar-placeholder{width:36px;height:36px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;}
+.rank-info{flex:1;min-width:0;}
+.rank-name{font-size:14px;font-weight:700;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rank-stats{font-size:12px;color:var(--text-tertiary);}
+.rank-score{font-size:18px;font-weight:800;color:var(--blue);}
+.empty-ranking{text-align:center;padding:48px 20px;color:var(--text-tertiary);font-size:14px;}
+
+/* PROFILE */
+.profile-wrap{padding:20px;}
+.profile-card{background:var(--white);border-radius:var(--radius-xl);padding:28px 24px;box-shadow:var(--shadow-md);margin-bottom:16px;text-align:center;}
+.profile-avatar-lg{width:72px;height:72px;border-radius:50%;object-fit:cover;margin:0 auto 12px;}
+.profile-avatar-placeholder-lg{width:72px;height:72px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;margin:0 auto 12px;}
+.profile-name{font-size:20px;font-weight:800;margin-bottom:4px;}
+.profile-email{font-size:13px;color:var(--text-tertiary);margin-bottom:20px;}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.profile-stat{background:var(--bg);border-radius:var(--radius-sm);padding:14px 8px;text-align:center;}
+.profile-stat-val{font-size:22px;font-weight:800;color:var(--blue);margin-bottom:4px;}
+.profile-stat-label{font-size:11px;color:var(--text-tertiary);font-weight:500;}
+.records-title{font-size:14px;font-weight:700;margin-bottom:12px;}
+.record-item{background:var(--white);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+.record-left .record-grade{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:2px;}
+.record-left .record-date{font-size:11px;color:var(--text-tertiary);}
+.record-right{text-align:right;}
+.record-score{font-size:16px;font-weight:800;color:var(--text-primary);}
+.record-acc{font-size:11px;color:var(--text-tertiary);}
+.logout-btn{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:16px;color:var(--red);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-top:8px;}
+.logout-btn:hover{border-color:var(--red);background:var(--red-light);}
+
+/* LOGIN PROMPT */
+.login-prompt{text-align:center;padding:48px 24px;}
+.login-prompt-icon{font-size:48px;margin-bottom:16px;}
+.login-prompt-title{font-size:18px;font-weight:800;margin-bottom:8px;}
+.login-prompt-desc{font-size:14px;color:var(--text-secondary);margin-bottom:24px;line-height:1.6;}
+.google-login-btn{display:inline-flex;align-items:center;gap:10px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:14px 24px;font-family:inherit;font-size:15px;font-weight:700;color:var(--text-primary);cursor:pointer;transition:all 0.15s;box-shadow:var(--shadow-sm);}
+.google-login-btn:hover{border-color:var(--blue);transform:translateY(-1px);box-shadow:var(--shadow-md);}
+.google-icon{width:20px;height:20px;}
+
+/* TOAST */
+.toast{position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--text-primary);color:#fff;border-radius:999px;padding:10px 22px;font-size:14px;font-weight:700;opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:200;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* SAVE BADGE */
+.save-badge{display:none;align-items:center;gap:6px;font-size:12px;color:var(--green);font-weight:600;padding:4px 12px;background:var(--green-light);border-radius:999px;margin-bottom:8px;}
+.save-badge.show{display:inline-flex;}
+
+@media(max-width:480px){.grade-grid{grid-template-columns:repeat(3,1fr);}}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-left">
+      <button class="nav-back" id="nav-back" onclick="goSetup()" style="visibility:hidden">←</button>
+      <span class="nav-title">수학 퀴즈</span>
+    </div>
+    <div id="auth-area"></div>
+  </nav>
+
+  <!-- STATS -->
+  <div class="stats-banner">
+    <div class="stat-item"><div class="stat-label">점수</div><div class="stat-value blue" id="score-val">0</div></div>
+    <div class="stat-item"><div class="stat-label">🔥 연속</div><div class="stat-value orange" id="streak-val">0</div></div>
+    <div class="stat-item"><div class="stat-label">정답률</div><div class="stat-value green" id="rate-val">—</div></div>
+    <div class="stat-item"><div class="stat-label">문제 수</div><div class="stat-value" id="total-val">0</div></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs" id="main-tabs">
+    <button class="tab-btn active" onclick="showTab('quiz')">퀴즈</button>
+    <button class="tab-btn" onclick="showTab('ranking')">랭킹</button>
+    <button class="tab-btn" onclick="showTab('profile')">내 기록</button>
+  </div>
+
+  <!-- QUIZ TAB -->
+  <div class="screen active" id="tab-quiz">
+    <!-- SETUP -->
+    <div id="setup-screen">
+      <div class="section">
+        <div class="section-label">빠른 선택</div>
+        <div class="quick-row">
+          <button class="chip" onclick="selectRange('elem')">초등 전체</button>
+          <button class="chip" onclick="selectRange('mid')">중학교 전체</button>
+          <button class="chip" onclick="selectRange('high')">고등학교 전체</button>
+          <button class="chip" onclick="selectRange('all')">전체</button>
+          <button class="chip" onclick="selectRange('none')">초기화</button>
+        </div>
+        <div class="section-label">학년 선택 <span id="sel-count" style="color:var(--blue);font-weight:800"></span></div>
+        <div class="grade-grid" id="grade-grid"></div>
+      </div>
+      <div class="cta-section">
+        <button class="cta-btn" id="start-btn" onclick="startQuiz()" disabled>문제 시작하기</button>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="quiz-screen" style="display:none">
+      <div class="quiz-wrap">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:4px;">
+          <span class="save-badge" id="save-badge">✓ 기록 저장됨</span>
+        </div>
+        <div class="quiz-header">
+          <span class="grade-pill" id="q-grade">—</span>
+          <span class="unit-text" id="q-unit"></span>
+        </div>
+        <div class="question-card" id="question-card">
+          <div class="question-num">Q <span id="q-num">1</span></div>
+          <div class="question-text" id="question-text"></div>
+        </div>
+        <div class="options-list" id="options-list"></div>
+        <div class="input-row" id="input-row" style="display:none">
+          <input class="ans-input" id="ans-input" type="text" placeholder="답을 입력하세요" />
+          <button class="confirm-btn" id="confirm-btn" onclick="submitAnswer()">확인</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+      <div class="action-row">
+        <button class="action-back" onclick="goSetup()">학년 변경</button>
+        <button class="action-next" id="next-btn" onclick="loadQuestion()">다음 문제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RANKING TAB -->
+  <div class="screen" id="tab-ranking">
+    <div class="ranking-wrap">
+      <div class="ranking-header">
+        <span class="ranking-title">🏆 전체 랭킹</span>
+        <button class="refresh-btn" onclick="loadRanking()">새로고침</button>
+      </div>
+      <div id="ranking-list"></div>
+    </div>
+  </div>
+
+  <!-- PROFILE TAB -->
+  <div class="screen" id="tab-profile">
+    <div class="profile-wrap" id="profile-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── 전역 상태 ──────────────────────────────────────────────────
+let currentUser = null;
+let selected = new Set();
+let score = 0, streak = 0, total = 0, correct = 0, qNum = 0, maxStreak = 0;
+let curAnswer = null, curType = 'mcq', curExplanation = '';
+let sessionGrade = '', sessionScore = 0, sessionCorrect = 0, sessionTotal = 0;
+
+// ── 유틸 ──────────────────────────────────────────────────────
+const GRADES=[
+  {id:'e1',label:'초1'},{id:'e2',label:'초2'},{id:'e3',label:'초3'},
+  {id:'e4',label:'초4'},{id:'e5',label:'초5'},{id:'e6',label:'초6'},
+  {id:'m1',label:'중1'},{id:'m2',label:'중2'},{id:'m3',label:'중3'},
+  {id:'h1',label:'고1'},{id:'h2',label:'고2'},{id:'h3',label:'고3'},
+];
+const RANGE={elem:['e1','e2','e3','e4','e5','e6'],mid:['m1','m2','m3'],high:['h1','h2','h3'],all:GRADES.map(g=>g.id),none:[]};
+
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function rndNZ(a,b){let v;do{v=rnd(a,b);}while(v===0);return v;}
+function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;}
+function comb(n,r){if(r>n)return 0;let res=1;for(let i=0;i<r;i++){res=res*(n-i)/(i+1);}return Math.round(res);}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+// ── 탭 ────────────────────────────────────────────────────────
+function showTab(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{if(['quiz','ranking','profile'][i]===name)b.classList.add('active');});
+  if(name==='ranking')loadRanking();
+  if(name==='profile')renderProfile();
+}
+
+// ── 인증 ──────────────────────────────────────────────────────
+async function fetchMe(){
+  try{
+    const res=await fetch('http://dc.wrd.kr:26359/api/me',{credentials:'include'});
+    const data=await res.json();
+    currentUser=data.user;
+    renderAuthArea();
+  }catch(e){currentUser=null;renderAuthArea();}
+}
+
+function renderAuthArea(){
+  const area=document.getElementById('auth-area');
+  if(currentUser){
+    const initial=currentUser.name?currentUser.name[0]:'?';
+    const avatarHtml=currentUser.avatar
+      ?`<img class="user-avatar" src="${currentUser.avatar}" alt="">`
+      :`<div class="user-avatar-placeholder">${initial}</div>`;
+    area.innerHTML=`<div class="user-chip" onclick="showTab('profile')">${avatarHtml}<span class="user-name">${currentUser.name}</span></div>`;
+  }else{
+    area.innerHTML=`<button class="login-btn" onclick="location.href='http://dc.wrd.kr:26359/auth/google'">
+      <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      구글 로그인
+    </button>`;
+  }
+}
+
+// ── API: 결과 저장 ────────────────────────────────────────────
+async function saveResult(){
+  if(!currentUser)return;
+  try{
+    const body={grade:sessionGrade,score:sessionScore,correct:sessionCorrect,total:sessionTotal,maxStreak};
+    const res=await fetch('http://dc.wrd.kr:26359/api/result',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify(body)});
+    if(res.ok){
+      const data=await res.json();
+      currentUser.totalScore=data.user.totalScore;
+      currentUser.bestStreak=data.user.bestStreak;
+      const badge=document.getElementById('save-badge');
+      badge.classList.add('show');
+      setTimeout(()=>badge.classList.remove('show'),3000);
+      await fetchMe();
+    }
+  }catch(e){console.error('저장 실패',e);}
+}
+
+// ── API: 랭킹 ────────────────────────────────────────────────
+async function loadRanking(){
+  const list=document.getElementById('ranking-list');
+  list.innerHTML='<div class="empty-ranking">불러오는 중…</div>';
+  try{
+    const res=await fetch('http://dc.wrd.kr:26359/api/ranking',{credentials:'include'});
+    const data=await res.json();
+    if(!data.ranking||data.ranking.length===0){
+      list.innerHTML='<div class="empty-ranking">아직 기록이 없어요!<br>첫 번째 랭커가 되어보세요 🏆</div>';
+      return;
+    }
+    list.innerHTML='';
+    data.ranking.forEach((u,i)=>{
+      const numClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      const isMe=currentUser&&String(u._id)===String(currentUser._id);
+      const acc=u.totalAnswered>0?Math.round(u.totalCorrect/u.totalAnswered*100):0;
+      const initial=u.name?u.name[0]:'?';
+      const avatarHtml=u.avatar?`<img class="rank-avatar" src="${u.avatar}" alt="">`:`<div class="rank-avatar-placeholder">${initial}</div>`;
+      list.innerHTML+=`<div class="rank-card${isMe?' me':''}">
+        <span class="rank-num ${numClass}">${i+1}</span>
+        ${avatarHtml}
+        <div class="rank-info">
+          <div class="rank-name">${u.name}${isMe?' (나)':''}</div>
+          <div class="rank-stats">정답률 ${acc}% · 최고연속 ${u.bestStreak}🔥</div>
+        </div>
+        <span class="rank-score">${u.totalScore.toLocaleString()}</span>
+      </div>`;
+    });
+  }catch(e){list.innerHTML='<div class="empty-ranking">랭킹을 불러오지 못했어요.</div>';}
+}
+
+// ── 프로필 ────────────────────────────────────────────────────
+function renderProfile(){
+  const wrap=document.getElementById('profile-content');
+  if(!currentUser){
+    wrap.innerHTML=`<div class="login-prompt">
+      <div class="login-prompt-icon">👤</div>
+      <div class="login-prompt-title">로그인이 필요해요</div>
+      <div class="login-prompt-desc">구글 로그인을 하면<br>점수와 기록이 저장돼요!</div>
+      <button class="google-login-btn" onclick="location.href='http://dc.wrd.kr:26359/auth/google'">
+        <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        구글로 로그인
+      </button>
+    </div>`;
+    return;
+  }
+  const acc=currentUser.totalAnswered>0?Math.round(currentUser.totalCorrect/currentUser.totalAnswered*100):0;
+  const initial=currentUser.name?currentUser.name[0]:'?';
+  const avatarHtml=currentUser.avatar
+    ?`<img class="profile-avatar-lg" src="${currentUser.avatar}" alt="">`
+    :`<div class="profile-avatar-placeholder-lg">${initial}</div>`;
+  let recordsHtml='';
+  const recs=[...(currentUser.records||[])].reverse().slice(0,10);
+  recs.forEach(r=>{
+    const d=new Date(r.date);
+    const dateStr=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    recordsHtml+=`<div class="record-item">
+      <div class="record-left"><div class="record-grade">${r.grade||'—'}</div><div class="record-date">${dateStr}</div></div>
+      <div class="record-right"><div class="record-score">${r.score}점</div><div class="record-acc">${r.accuracy}% 정확도</div></div>
+    </div>`;
+  });
+  wrap.innerHTML=`
+    <div class="profile-card">
+      ${avatarHtml}
+      <div class="profile-name">${currentUser.name}</div>
+      <div class="profile-email">${currentUser.email||''}</div>
+      <div class="profile-stats">
+        <div class="profile-stat"><div class="profile-stat-val">${currentUser.totalScore.toLocaleString()}</div><div class="profile-stat-label">누적 점수</div></div>
+        <div class="profile-stat"><div class="profile-stat-val">${acc}%</div><div class="profile-stat-label">정답률</div></div>
+        <div class="profile-stat"><div class="profile-stat-val">${currentUser.bestStreak}🔥</div><div class="profile-stat-label">최고 연속</div></div>
+      </div>
+    </div>
+    ${recs.length>0?`<div class="records-title">최근 기록</div>${recordsHtml}`:''}
+    <button class="logout-btn" onclick="location.href='http://dc.wrd.kr:26359/auth/logout'">로그아웃</button>
+  `;
+}
+
+// ── 문제 생성 엔진 ────────────────────────────────────────────
+function wrongsMCQ(ans,gen){
+  const s=new Set([ans]);const candidates=[];
+  for(let i=0;i<40;i++){const v=gen();if(!s.has(v)){candidates.push(v);s.add(v);if(candidates.length>=3)break;}}
+  return candidates.slice(0,3);
+}
+
+const GENERATORS={
+  e1:()=>{const t=[()=>{const a=rnd(1,9),b=rnd(1,9-a);return{q:`${a} + ${b} = ?`,a:a+b,unit:'덧셈',exp:`${a} + ${b} = ${a+b}`};},()=>{const b=rnd(1,9),a=rnd(b,9);return{q:`${a} - ${b} = ?`,a:a-b,unit:'뺄셈',exp:`${a} - ${b} = ${a-b}`};},()=>{const a=rnd(1,5),b=rnd(1,5);return{q:`${a} + ○ = ${a+b}`,a:b,unit:'빈칸 채우기',exp:`${a} + ${b} = ${a+b}이므로 ○ = ${b}`};}];return t[rnd(0,t.length-1)]();},
+  e2:()=>{const t=[()=>{const a=rnd(10,50),b=rnd(10,40);return{q:`${a} + ${b} = ?`,a:a+b,unit:'두 자리 덧셈',exp:`${a} + ${b} = ${a+b}`};},()=>{const b=rnd(10,40),a=rnd(b+10,99);return{q:`${a} - ${b} = ?`,a:a-b,unit:'두 자리 뺄셈',exp:`${a} - ${b} = ${a-b}`};},()=>{const a=rnd(2,5),b=rnd(2,5);return{q:`${a} × ${b} = ?`,a:a*b,unit:'곱셈구구',exp:`${a} × ${b} = ${a*b}`};}];return t[rnd(0,t.length-1)]();},
+  e3:()=>{const t=[()=>{const a=rnd(2,9),b=rnd(2,9);return{q:`${a} × ${b} = ?`,a:a*b,unit:'곱셈',exp:`${a} × ${b} = ${a*b}`};},()=>{const b=rnd(2,9),a=b*rnd(2,9);return{q:`${a} ÷ ${b} = ?`,a:a/b,unit:'나눗셈',exp:`${a} ÷ ${b} = ${a/b}`};},()=>{const a=rnd(100,500),b=rnd(100,400);return{q:`${a} + ${b} = ?`,a:a+b,unit:'세 자리 덧셈',exp:`${a} + ${b} = ${a+b}`};}];return t[rnd(0,t.length-1)]();},
+  e4:()=>{const t=[()=>{const a=rnd(10,99),b=rnd(10,99);return{q:`${a} × ${b} = ?`,a:a*b,unit:'두 자리 곱셈',exp:`${a} × ${b} = ${a*b}`};},()=>{const b=rnd(2,9),q2=rnd(10,99),a=b*q2;return{q:`${a} ÷ ${b} = ?`,a:q2,unit:'나눗셈',exp:`${a} ÷ ${b} = ${q2}`};},()=>{const s=rnd(2,10);return{q:`한 변 ${s}cm인 정사각형의 넓이?`,a:s*s,unit:'넓이',exp:`${s} × ${s} = ${s*s}cm²`};}];return t[rnd(0,t.length-1)]();},
+  e5:()=>{const t=[()=>{const a=rndNZ(1,9),b=rndNZ(1,9);return{q:`${a} ÷ ${b} = ? (소수 둘째 자리)`,a:(a/b).toFixed(2),unit:'소수 나눗셈',exp:`${a} ÷ ${b} = ${(a/b).toFixed(2)}`};},()=>{const r=rnd(2,8);return{q:`반지름 ${r}cm인 원의 넓이? (π=3.14)`,a:(r*r*3.14).toFixed(2),unit:'원의 넓이',exp:`π × ${r}² = ${(r*r*3.14).toFixed(2)}cm²`};}];return t[rnd(0,t.length-1)]();},
+  e6:()=>{const t=[()=>{const a=rnd(1,5),b=rnd(1,5),c=rnd(1,5),d=rnd(1,5);return{q:`${a}/${b} × ${c}/${d} = ?`,a:`${a*c}/${b*d}`,unit:'분수 곱셈',exp:`분자×분자, 분모×분모: ${a*c}/${b*d}`};},()=>{const l=rnd(3,8),w=rnd(3,8),h=rnd(3,8);return{q:`가로${l} 세로${w} 높이${h}cm 직육면체 부피?`,a:`${l*w*h}`,unit:'부피',exp:`${l}×${w}×${h} = ${l*w*h}cm³`};}];return t[rnd(0,t.length-1)]();},
+  m1:()=>{const t=[()=>{const a=rndNZ(-9,9),b=rndNZ(-9,9);return{q:`(${a}) + (${b}) = ?`,a:`${a+b}`,unit:'정수 덧셈',exp:`${a} + ${b} = ${a+b}`};},()=>{const a=rndNZ(-9,9),b=rndNZ(-9,9);return{q:`(${a}) × (${b}) = ?`,a:`${a*b}`,unit:'정수 곱셈',exp:`${a} × ${b} = ${a*b}`};},()=>{const a=rndNZ(1,4),b=rnd(1,8),x=rnd(1,9);return{q:`${a}x + ${b} = ${a*x+b}일 때, x = ?`,a:`${x}`,unit:'일차방정식',exp:`${a}x = ${a*x+b-b} → x = ${x}`};}];return t[rnd(0,t.length-1)]();},
+  m2:()=>{const t=[()=>{const a=rnd(3,8),b=rnd(4,8);const c=Math.sqrt(a*a+b*b);return{q:`직각변 ${a}cm, ${b}cm일 때 빗변은?`,a:Number.isInteger(c)?String(c):c.toFixed(2),unit:'피타고라스',exp:`√(${a}²+${b}²) = √${a*a+b*b} ≈ ${c.toFixed(2)}`};},()=>{const a=rndNZ(1,4),b=rnd(-4,4);return{q:`y = ${a}x + ${b}의 x절편은?`,a:`${-b/a}`,unit:'일차함수',exp:`y=0 → x = ${-b/a}`};}];return t[rnd(0,t.length-1)]();},
+  m3:()=>{const t=[()=>{const a=rndNZ(1,3),b=rnd(-5,5);return{q:`${a}x² + ${b}x = 0 의 두 근은?`,a:`x=0 또는 x=${-b/a}`,unit:'이차방정식',exp:`x(${a}x+${b})=0`};},()=>{const h=rnd(-3,3),k=rnd(-3,3);return{q:`y = 2(x-${h})²+${k}의 꼭짓점?`,a:`(${h},${k})`,unit:'이차함수',exp:`꼭짓점 = (${h}, ${k})`};}];return t[rnd(0,t.length-1)]();},
+  h1:()=>{const t=[()=>{const base=rnd(2,4),exp2=rnd(2,5);return{q:`${base}^${exp2} = ?`,a:`${Math.pow(base,exp2)}`,unit:'지수',exp:`${base}^${exp2} = ${Math.pow(base,exp2)}`};},()=>{const n=rnd(2,6);return{q:`log₂(${Math.pow(2,n)}) = ?`,a:`${n}`,unit:'로그',exp:`log₂(2^${n}) = ${n}`};},()=>{const n=rnd(2,8);return{q:`1부터 ${n}까지 합은?`,a:`${n*(n+1)/2}`,unit:'수열',exp:`n(n+1)/2 = ${n*(n+1)/2}`};}];return t[rnd(0,t.length-1)]();},
+  h2:()=>{const t=[()=>{const vals={0:'0',30:'1/2',45:'√2/2',60:'√3/2',90:'1'};const keys=Object.keys(vals);const d=keys[rnd(0,keys.length-1)];return{q:`sin(${d}°) = ?`,a:vals[d],unit:'삼각함수',exp:`sin(${d}°) = ${vals[d]}`};},()=>{const a=rnd(1,5),n=rnd(2,5),r=rnd(2,3);return{q:`첫째항 ${a}, 공비 ${r}인 등비수열 제${n}항?`,a:`${a*Math.pow(r,n-1)}`,unit:'등비수열',exp:`a×r^(n-1) = ${a}×${r}^${n-1} = ${a*Math.pow(r,n-1)}`};}];return t[rnd(0,t.length-1)]();},
+  h3:()=>{const t=[()=>{const n=rnd(3,6),r=rnd(1,n-1);return{q:`C(${n},${r}) = ?`,a:`${comb(n,r)}`,unit:'조합',exp:`${n}!/(${r}!×${n-r}!) = ${comb(n,r)}`};},()=>{const a=rnd(1,4),b=rnd(1,4);return{q:`P(A)=${a}/10, P(B)=${b}/10, 독립일 때 P(A∩B)=?`,a:`${a*b}/100`,unit:'확률',exp:`P(A)×P(B) = ${a*b}/100`};}];return t[rnd(0,t.length-1)]();},
+};
+
+function generateQuestion(gid){const gen=GENERATORS[gid];if(!gen)return null;return gen();}
+
+// ── 학년 선택 UI ──────────────────────────────────────────────
+const grid=document.getElementById('grade-grid');
+GRADES.forEach(g=>{
+  const btn=document.createElement('button');
+  btn.className='grade-btn';btn.dataset.id=g.id;btn.textContent=g.label;
+  btn.onclick=()=>{selected.has(g.id)?selected.delete(g.id):selected.add(g.id);btn.classList.toggle('selected',selected.has(g.id));updateCount();};
+  grid.appendChild(btn);
+});
+function updateCount(){const n=selected.size;document.getElementById('sel-count').textContent=n?`${n}개 선택됨`:'';document.getElementById('start-btn').disabled=n===0;}
+function selectRange(r){selected=new Set(RANGE[r]);document.querySelectorAll('.grade-btn').forEach(b=>b.classList.toggle('selected',selected.has(b.dataset.id)));updateCount();}
+
+// ── 퀴즈 흐름 ─────────────────────────────────────────────────
+function startQuiz(){
+  score=0;streak=0;total=0;correct=0;qNum=0;maxStreak=0;
+  sessionScore=0;sessionCorrect=0;sessionTotal=0;
+  updateStats();
+  document.getElementById('setup-screen').style.display='none';
+  document.getElementById('quiz-screen').style.display='block';
+  document.getElementById('nav-back').style.visibility='visible';
+  loadQuestion();
+}
+function goSetup(){
+  document.getElementById('setup-screen').style.display='block';
+  document.getElementById('quiz-screen').style.display='none';
+  document.getElementById('nav-back').style.visibility='hidden';
+}
+function updateStats(){
+  document.getElementById('score-val').textContent=score;
+  document.getElementById('streak-val').textContent=streak;
+  document.getElementById('total-val').textContent=total;
+  document.getElementById('rate-val').textContent=total>0?Math.round(correct/total*100)+'%':'—';
+}
+
+function loadQuestion(){
+  qNum++;
+  const card=document.getElementById('question-card');
+  card.className='question-card';
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('next-btn').style.display='none';
+  document.getElementById('options-list').innerHTML='';
+  document.getElementById('input-row').style.display='none';
+  const ai=document.getElementById('ans-input');
+  ai.value='';ai.className='ans-input';ai.disabled=false;
+  document.getElementById('confirm-btn').disabled=false;
+  document.getElementById('q-num').textContent=qNum;
+
+  const arr=[...selected];
+  const gid=arr[rnd(0,arr.length-1)];
+  const g=GRADES.find(x=>x.id===gid);
+  const q=generateQuestion(gid);
+  if(!q){loadQuestion();return;}
+
+  sessionGrade=g.label;
+  document.getElementById('q-grade').textContent=g.label;
+  document.getElementById('q-unit').textContent=q.unit||'';
+  document.getElementById('question-text').textContent=q.q;
+  curExplanation=q.exp||'';
+  curAnswer=String(q.a).trim();
+
+  const isNumeric=!isNaN(parseFloat(curAnswer))&&!curAnswer.includes('/')&&!curAnswer.includes(':')&&!curAnswer.includes('x')&&!curAnswer.includes('또는')&&!curAnswer.includes('(');
+  curType=isNumeric?'mcq':'short';
+
+  if(curType==='mcq'){
+    const ansNum=parseFloat(curAnswer);
+    const wrongs=wrongsMCQ(curAnswer,()=>{
+      const delta=rnd(1,Math.max(2,Math.round(Math.abs(ansNum)*0.4+2)));
+      const sign=Math.random()<0.5?1:-1;
+      return String(Math.round((ansNum+delta*sign)*100)/100);
+    });
+    const opts=shuffle([curAnswer,...wrongs]);
+    const correctIdx=opts.indexOf(curAnswer);
+    const list=document.getElementById('options-list');
+    opts.forEach((opt,i)=>{
+      const btn=document.createElement('button');
+      btn.className='opt-btn';
+      btn.innerHTML=`<span class="num">${i+1}</span><span>${opt}</span>`;
+      btn.onclick=()=>pickOpt(i,correctIdx,btn,opts);
+      list.appendChild(btn);
+    });
+  }else{
+    document.getElementById('input-row').style.display='flex';
+    const ai=document.getElementById('ans-input');
+    ai.focus();
+    ai.onkeydown=e=>{if(e.key==='Enter')submitAnswer();};
+  }
+}
+
+function pickOpt(idx,correctIdx,btn,opts){
+  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const ok=idx===correctIdx;
+  total++;sessionTotal++;
+  btn.className='opt-btn '+(ok?'sel-correct':'sel-wrong');
+  if(!ok)document.querySelectorAll('.opt-btn')[correctIdx].className='opt-btn show-correct';
+  resolve(ok,opts[correctIdx]);
+}
+function submitAnswer(){
+  const ai=document.getElementById('ans-input');
+  const val=ai.value.trim();if(!val)return;
+  ai.disabled=true;document.getElementById('confirm-btn').disabled=true;
+  total++;sessionTotal++;
+  const ok=val===curAnswer||(!isNaN(parseFloat(val))&&Math.abs(parseFloat(val)-parseFloat(curAnswer))<0.01);
+  ai.className='ans-input '+(ok?'correct':'wrong');
+  resolve(ok,curAnswer);
+}
+function resolve(ok,correctText){
+  const card=document.getElementById('question-card');
+  const fb=document.getElementById('feedback');
+  if(ok){
+    correct++;sessionCorrect++;streak++;score+=Math.max(10,10*streak);sessionScore+=Math.max(10,10*streak);
+    if(streak>maxStreak)maxStreak=streak;
+    card.className='question-card correct';
+    fb.className='feedback correct show';
+    fb.innerHTML=`<div class="feedback-top">✅ 정답이에요!</div>${curExplanation}`;
+    if(streak>=3)showToast(`🔥 ${streak}연속 정답!`);
+  }else{
+    streak=0;
+    card.className='question-card wrong';
+    fb.className='feedback wrong show';
+    fb.innerHTML=`<div class="feedback-top">❌ 틀렸어요</div>정답: <strong>${correctText}</strong><br>${curExplanation}`;
+  }
+  updateStats();
+  document.getElementById('next-btn').style.display='block';
+  // 문제 풀 때마다 저장
+  if(currentUser)saveResult();
+}
+
+// ── 초기화 ────────────────────────────────────────────────────
+fetchMe();
+updateStats();
+</script>
+</body>
+</html>
