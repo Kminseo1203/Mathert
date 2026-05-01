@@ -958,11 +958,11 @@ async function fetchMe(){
     const data=await res.json();
     currentUser=data.user||null;
     if(currentUser){
-      // DB에서 가져온 누적 점수 반영
+      // DB에서 가져온 누적 통계 반영
       score=currentUser.totalScore||0;
       correct=currentUser.totalCorrect||0;
       total=currentUser.totalAnswered||0;
-      streak=0;
+      streak=currentUser.bestStreak||0;
       updateStats();
       renderAuthArea();
     }
@@ -1126,7 +1126,10 @@ function resolve(ok,correctText){
 
   updateStats();
   document.getElementById('next-btn').style.display='block';
-  if(currentUser&&curFeedback)saveResult(curFeedback.unit,score,correct,total,streak);
+  // 이번 문제 점수만 저장 (누적X)
+  const thisScore=ok?Math.max(10,10*streak):0;
+  const thisCorrect=ok?1:0;
+  if(currentUser&&curFeedback)saveResult(curFeedback.unit,thisScore,thisCorrect,1,streak);
 }
 
 initAuth();
