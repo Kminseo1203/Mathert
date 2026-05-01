@@ -3,9 +3,10 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
   const redirectUri = `${env.BASE_URL}/functions/api/auth/callback`;
+  const frontendUrl = env.FRONTEND_URL || 'https://kminseo1203.github.io/Mathert';
 
   try {
-    // 1. code → access_token 교환
+    // 1. code → access_token
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -18,57 +19,37 @@ export async function onRequest(context) {
       }),
     });
     const tokenData = await tokenRes.json();
+    if (!tokenData.access_token) throw new Error('토큰 발급 실패');
 
-    // 2. 유저 정보 가져오기
+    // 2. 유저 정보
     const userRes = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
       headers: { Authorization: `Bearer ${tokenData.access_token}` },
     });
-    const userInfo = await userRes.json();
+    const u = await userRes.json();
 
-    // 3. MongoDB에 유저 저장/업데이트
-    const mongoRes = await fetch(`${env.MONGODB_URI}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'api-key': env.MONGODB_API_KEY },
-      body: JSON.stringify({
-        collection: 'users',
-        database: 'math-quiz',
-        dataSource: 'Cluster0',
-        filter: { googleId: userInfo.id },
-        update: {
-          $set: {
-            googleId: userInfo.id,
-            email: userInfo.email,
-            name: userInfo.name,
-            avatar: userInfo.picture,
-            lastLoginAt: new Date().toISOString(),
-          },
-          $setOnInsert: {
-            totalScore: 0,
-            totalCorrect: 0,
-            totalAnswered: 0,
-            bestStreak: 0,
-            records: [],
-            createdAt: new Date().toISOString(),
-          },
-        },
-        upsert: true,
-      }),
-    });
+    // 3. D1에 유저 저장/업데이트
+    const db = context.env.DB;
+    const existing = await db.prepare('SELECT id FROM users WHERE google_id = ?').bind(u.id).first();
+    if (existing) {
+      await db.prepare('UPDATE users SET name=?, email=?, avatar=?, last_login_at=datetime("now") WHERE google_id=?')
+        .bind(u.name, u.email, u.picture, u.id).run();
+    } else {
+      await db.prepare('INSERT INTO users (google_id, name, email, avatar) VALUES (?,?,?,?)')
+        .bind(u.id, u.name, u.email, u.picture).run();
+    }
 
-    // 4. JWT 토큰 생성 (간단히 base64 인코딩)
+    // 4. JWT 토큰 생성 (base64)
     const payload = {
-      googleId: userInfo.id,
-      name: userInfo.name,
-      email: userInfo.email,
-      avatar: userInfo.picture,
-      exp: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7일
+      googleId: u.id,
+      name: u.name,
+      email: u.email,
+      avatar: u.picture,
+      exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
     };
-    const token = btoa(JSON.stringify(payload));
+    const token = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
 
-    // 5. 프론트엔드로 리디렉트 (토큰을 URL 파라미터로 전달)
-    return Response.redirect(`${env.FRONTEND_URL}/?token=${token}`, 302);
-
+    return Response.redirect(`${frontendUrl}?token=${token}`, 302);
   } catch (err) {
-    return Response.redirect(`${env.FRONTEND_URL}/?error=auth`, 302);
+    return Response.redirect(`${frontendUrl}?error=auth&msg=${encodeURIComponent(err.message)}`, 302);
   }
 }
