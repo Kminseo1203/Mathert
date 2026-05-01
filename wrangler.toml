@@ -1,0 +1,7 @@
+name = "mathert"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mathert"
+database_id = "fa1aee29-7b76-4de1-bc2d-9b172ba7d82b"
