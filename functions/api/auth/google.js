@@ -5,7 +5,7 @@ export async function onRequest(context) {
 
   if (!code) {
     const clientId = "849893014181-p492lse5lvr230l9ecd6jc99go98nght.apps.googleusercontent.com";
-    const redirectUri = "https://mathert.pages.dev/functions/api/auth/google";
+    const redirectUri = "https://mathert.pages.dev/functions/api/auth/callback";
     const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
     authUrl.searchParams.set('client_id', clientId);
     authUrl.searchParams.set('redirect_uri', redirectUri);
@@ -22,7 +22,7 @@ export async function onRequest(context) {
         code,
         client_id: env.GOOGLE_CLIENT_ID,
         client_secret: env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: "https://mathert.pages.dev/functions/api/auth/google",
+        redirect_uri: "https://mathert.pages.dev/functions/api/auth/callback",
         grant_type: 'authorization_code',
       }),
     });
