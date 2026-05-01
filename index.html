@@ -63,6 +63,13 @@ body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-ap
 .confirm-btn{background:var(--blue);border:none;border-radius:var(--radius-md);padding:16px 22px;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
 .confirm-btn:hover:not(:disabled){background:var(--blue-dark);}
 .confirm-btn:disabled{background:var(--border);color:var(--text-tertiary);cursor:not-allowed;}
+.sym-pad{display:none;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.sym-pad.show{display:flex;}
+.sym-btn{background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:14px;font-weight:700;color:var(--text-primary);cursor:pointer;transition:all 0.15s;min-width:44px;text-align:center;}
+.sym-btn:hover{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
+.sym-btn.del{color:var(--red);border-color:var(--border);}
+.sym-btn.del:hover{border-color:var(--red);background:var(--red-light);}
+
 .feedback{border-radius:var(--radius-md);padding:18px 20px;margin-bottom:16px;display:none;font-size:14px;line-height:1.7;color:var(--text-secondary);}
 .feedback.show{display:block;}
 .feedback.correct{background:var(--green-light);}
@@ -132,6 +139,18 @@ body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-ap
         <div class="question-text" id="question-text"></div>
       </div>
       <div class="options-list" id="options-list"></div>
+      <div class="sym-pad" id="sym-pad">
+        <button class="sym-btn" onclick="insSymbol('√')">√</button>
+        <button class="sym-btn" onclick="insSymbol('π')">π</button>
+        <button class="sym-btn" onclick="insSymbol('/')">／</button>
+        <button class="sym-btn" onclick="insSymbol('²')">x²</button>
+        <button class="sym-btn" onclick="insSymbol('³')">x³</button>
+        <button class="sym-btn" onclick="insSymbol('≤')">≤</button>
+        <button class="sym-btn" onclick="insSymbol('≥')">≥</button>
+        <button class="sym-btn" onclick="insSymbol('∞')">∞</button>
+        <button class="sym-btn" onclick="insSymbol('-')">−</button>
+        <button class="sym-btn del" onclick="delSymbol()">⌫</button>
+      </div>
       <div class="input-row" id="input-row" style="display:none">
         <input class="ans-input" id="ans-input" type="text" placeholder="답을 입력하세요"/>
         <button class="confirm-btn" id="confirm-btn" onclick="submitAnswer()">확인</button>
@@ -898,6 +917,7 @@ function loadQuestion(){
   document.getElementById('next-btn').style.display='none';
   document.getElementById('options-list').innerHTML='';
   document.getElementById('input-row').style.display='none';
+  document.getElementById('sym-pad').classList.remove('show');
   const ai=document.getElementById('ans-input');
   ai.value='';ai.className='ans-input';ai.disabled=false;
   document.getElementById('confirm-btn').disabled=false;
@@ -937,6 +957,7 @@ function loadQuestion(){
     });
   } else {
     document.getElementById('input-row').style.display='flex';
+    document.getElementById('sym-pad').classList.add('show');
     const ai=document.getElementById('ans-input');
     ai.focus();
     ai.onkeydown=e=>{if(e.key==='Enter')submitAnswer();};
@@ -951,6 +972,20 @@ function pickOpt(idx,correctIdx,btn,opts){
   resolve(ok,opts[correctIdx]);
 }
 
+
+function insSymbol(s){
+  const ai=document.getElementById('ans-input');
+  const start=ai.selectionStart,end=ai.selectionEnd;
+  ai.value=ai.value.slice(0,start)+s+ai.value.slice(end);
+  ai.selectionStart=ai.selectionEnd=start+s.length;
+  ai.focus();
+}
+function delSymbol(){
+  const ai=document.getElementById('ans-input');
+  const start=ai.selectionStart;
+  if(start>0){ai.value=ai.value.slice(0,start-1)+ai.value.slice(start);ai.selectionStart=ai.selectionEnd=start-1;}
+  ai.focus();
+}
 function submitAnswer(){
   const ai=document.getElementById('ans-input');
   const val=ai.value.trim();if(!val)return;
