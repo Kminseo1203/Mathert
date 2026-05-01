@@ -6,7 +6,10 @@ const cors = {
 
 export async function onRequest(context) {
   const { request } = context;
-  if (request.method === 'OPTIONS') return new Response(null, { headers: cors });
+
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { headers: cors });
+  }
 
   try {
     const db = context.env.DB;
@@ -21,7 +24,11 @@ export async function onRequest(context) {
     return new Response(JSON.stringify({ ranking: ranking.results }), {
       headers: { ...cors, 'Content-Type': 'application/json' },
     });
+
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: cors });
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: cors,
+    });
   }
 }
