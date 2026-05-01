@@ -945,6 +945,8 @@ async function initAuth(){
   if(params.get('error'))showToast('로그인 실패');
   if(authToken){
     await fetchMe();
+  }else{
+    updateStats();
   }
   renderAuthArea();
 }
@@ -1127,7 +1129,6 @@ function resolve(ok,correctText){
   if(currentUser&&curFeedback)saveResult(curFeedback.unit,score,correct,total,streak);
 }
 
-updateStats();
 initAuth();
 </script>
 </body>
