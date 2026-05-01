@@ -2,7 +2,7 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
-  const redirectUri = `${env.BASE_URL}/functions/api/auth/callback`;
+  const redirectUri = `${env.BASE_URL}/api/auth/callback`;
   const frontendUrl = env.FRONTEND_URL || 'https://kminseo1203.github.io/Mathert';
 
   try {
