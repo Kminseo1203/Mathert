@@ -6,7 +6,7 @@ export async function onRequest(context) {
   const frontendUrl = env.FRONTEND_URL || 'https://kminseo1203.github.io/Mathert';
 
   try {
-    // 1. code → access_token
+
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
