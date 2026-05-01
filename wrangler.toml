@@ -5,3 +5,8 @@ pages_build_output_dir = "."
 binding = "DB"
 database_name = "mathert"
 database_id = "fa1aee29-7b76-4de1-bc2d-9b172ba7d82b"
+
+[vars]
+BASE_URL = "https://mathert.pages.dev"
+FRONTEND_URL = "https://kminseo1203.github.io/Mathert"
+GOOGLE_CLIENT_ID = "849893014181-p492lse5lvr230l9ecd6jc99go98nght.apps.googleusercontent.com"
