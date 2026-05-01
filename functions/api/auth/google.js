@@ -5,7 +5,7 @@ export async function onRequest(context) {
   const baseUrl = env.BASE_URL || 'https://mathert.pages.dev';
   
   // 2. 주소를 반드시 'callback'으로 맞춰야 합니다.
-  const redirectUri = `${baseUrl}/functions/api/auth/callback`;
+  const redirectUri = `${baseUrl}/api/auth/callback`;
   
   const clientId = "849893014181-p492lse5lvr230l9ecd6jc99go98nght.apps.googleusercontent.com";
   
