@@ -10,6 +10,14 @@ export async function onRequest(context) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers: cors });
   }
+  // Origin 화이트리스트 체크
+  const origin = request.headers.get('Origin');
+  const allowed = ['https://mathert.pages.dev', 'https://kminseo1203.github.io'];
+  if (origin && !allowed.includes(origin)) {
+    return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+  }
+
+
 
   try {
     const token = request.headers.get('Authorization')?.replace('Bearer ', '');
