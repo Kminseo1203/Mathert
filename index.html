@@ -97,7 +97,7 @@ body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-ap
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 @media(max-width:480px){.grade-grid{grid-template-columns:repeat(3,1fr);}}
 
-.tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);}
+.tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:56px;z-index:99;}
 .tab-btn{flex:1;padding:14px;font-family:inherit;font-size:14px;font-weight:600;color:var(--text-tertiary);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
 .tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
 .ranking-wrap{padding:20px;}
@@ -1109,6 +1109,7 @@ function showTab(name){
   if(name==='ranking')loadRanking();
   if(name==='profile')renderProfile();
   if(name==='admin')loadAdminPanel();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 // ── 랭킹 ─────────────────────────────────────────────────────────
