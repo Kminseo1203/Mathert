@@ -43,6 +43,16 @@ export async function onRequest(context) {
       return new Response(JSON.stringify({ error: '유저 없음' }), { status: 404, headers: cors });
     }
 
+    // 밴 체크
+    const ban = await db.prepare(`
+      SELECT id FROM bans WHERE user_id = ?
+      AND (ban_type = 'permanent' OR (ban_type = 'temp' AND expires_at > datetime('now')))
+      LIMIT 1
+    `).bind(user.id).first();
+    if (ban) {
+      return new Response(JSON.stringify({ error: '정지된 계정입니다.' }), { status: 403, headers: cors });
+    }
+
     const newBestStreak = Math.max(user.best_streak, maxStreak);
 
     await db.prepare(`
