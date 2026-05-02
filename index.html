@@ -1109,6 +1109,8 @@ function showTab(name){
   if(name==='ranking')loadRanking();
   if(name==='profile')renderProfile();
   if(name==='admin')loadAdminPanel();
+  // 퀴즈 탭에서만 stats 보이게
+  document.querySelector('.stats-banner').style.display=name==='quiz'?'flex':'none';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
