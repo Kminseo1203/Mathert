@@ -203,12 +203,34 @@ body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-ap
     <button class="tab-btn active" onclick="showTab('quiz')">퀴즈</button>
     <button class="tab-btn" onclick="showTab('ranking')">🏆 랭킹</button>
     <button class="tab-btn" onclick="showTab('profile')">내 기록</button>
+    <button class="tab-btn" onclick="showTab('wrong')">📝 오답<span class="tab-badge" id="wrong-badge" style="display:none">0</span></button>
+    <button class="tab-btn" onclick="showTab('stats')">📊 통계</button>
     <button class="tab-btn" id="admin-tab-btn" style="display:none" onclick="showTab('admin')">🔧 관리</button>
   </div>
 
   <div id="tab-quiz">
   <div id="setup-screen">
     <div class="section">
+      <div class="section-label">난이도</div>
+      <div class="diff-row">
+        <button class="diff-btn easy" data-diff="easy" onclick="selectDiff('easy')">😊 쉬움</button>
+        <button class="diff-btn selected" data-diff="normal" onclick="selectDiff('normal')">📚 보통</button>
+        <button class="diff-btn hard" data-diff="hard" onclick="selectDiff('hard')">🔥 어려움</button>
+      </div>
+      <div class="section-label">타이머</div>
+      <div class="diff-row" style="margin-bottom:20px;">
+        <button class="diff-btn selected" data-timer="0" onclick="selectTimer(0)">∞ 무제한</button>
+        <button class="diff-btn" data-timer="60" onclick="selectTimer(60)">⏱ 60초</button>
+        <button class="diff-btn" data-timer="30" onclick="selectTimer(30)">⚡ 30초</button>
+      </div>
+      <div class="section-label" style="display:flex;align-items:center;justify-content:space-between;">
+        단원별 집중 학습
+        <button class="chip" id="unit-toggle-btn" onclick="toggleUnitStudy()" style="font-size:11px;padding:4px 10px;">펼치기</button>
+      </div>
+      <div id="unit-study-section" style="display:none;margin-bottom:16px;">
+        <div class="unit-study-grid" id="unit-study-grid"></div>
+        <button class="chip" onclick="clearUnitStudy()" style="width:100%;border-radius:var(--radius-sm);padding:10px;">단원 선택 해제</button>
+      </div>
       <div class="section-label">빠른 선택</div>
       <div class="quick-row">
         <button class="chip" onclick="selectRange('elem')">초등 전체</button>
@@ -226,6 +248,10 @@ body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-ap
   </div>
   <div id="quiz-screen" style="display:none">
     <div class="quiz-wrap">
+      <div class="timer-text" id="timer-text" style="display:none"></div>
+      <div class="timer-bar" id="timer-bar" style="display:none">
+        <div class="timer-fill" id="timer-fill"></div>
+      </div>
       <div class="quiz-header">
         <span class="grade-pill" id="q-grade">—</span>
         <span class="unit-text" id="q-unit"></span>
@@ -269,6 +295,28 @@ body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-ap
         <button class="refresh-btn" onclick="loadRanking()">새로고침</button>
       </div>
       <div id="ranking-list"><div class="empty-ranking">불러오는 중…</div></div>
+    </div>
+  </div>
+
+  <!-- 오답 노트 탭 -->
+  <div id="tab-wrong" style="display:none">
+    <div class="ranking-wrap">
+      <div class="ranking-header">
+        <span class="ranking-title">📝 오답 노트</span>
+        <button class="refresh-btn" onclick="loadWrongNotes()">새로고침</button>
+      </div>
+      <div id="wrong-list"><div class="empty-ranking">불러오는 중…</div></div>
+    </div>
+  </div>
+
+  <!-- 통계 탭 -->
+  <div id="tab-stats" style="display:none">
+    <div class="ranking-wrap">
+      <div class="ranking-header">
+        <span class="ranking-title">📊 단원별 통계</span>
+        <button class="refresh-btn" onclick="loadUnitStats()">새로고침</button>
+      </div>
+      <div id="stats-list"><div class="empty-ranking">불러오는 중…</div></div>
     </div>
   </div>
 
@@ -1118,6 +1166,7 @@ async function fetchMe(){
       updateStats();
       renderAuthArea();
       checkAdminTab();
+      updateWrongBadge();
     }
   }catch(e){currentUser=null;}
 }
@@ -1155,20 +1204,21 @@ async function saveResult(grade,score,correct,total,maxStreak){
 
 // ── 탭 ──────────────────────────────────────────────────────────
 function showTab(name){
-  ['quiz','ranking','profile','admin'].forEach(t=>{
+  ['quiz','ranking','profile','wrong','stats','admin'].forEach(t=>{
     const el=document.getElementById('tab-'+t);
     if(el)el.style.display='none';
   });
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   const el=document.getElementById('tab-'+name);
   if(el)el.style.display='block';
-  const idx={quiz:0,ranking:1,profile:2,admin:3}[name];
+  const idx={quiz:0,ranking:1,profile:2,wrong:3,stats:4,admin:5}[name];
   const btns=document.querySelectorAll('.tab-btn');
   if(btns[idx])btns[idx].classList.add('active');
   if(name==='ranking')loadRanking();
   if(name==='profile')renderProfile();
   if(name==='admin')loadAdminPanel();
-  // 퀴즈 탭에서만 stats 보이게
+  if(name==='wrong')loadWrongNotes();
+  if(name==='stats')loadUnitStats();
   document.querySelector('.stats-banner').style.display=name==='quiz'?'flex':'none';
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1242,6 +1292,9 @@ function renderProfile(){
       </div>
     </div>
     ${recs.length>0?`<div class="records-title">최근 기록</div>${recordsHtml}`:''}
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <button class="share-btn" onclick="shareScore()" style="flex:1;justify-content:center;">📤 점수 공유하기</button>
+    </div>
     <button class="logout-btn" onclick="logout()">로그아웃</button>
   `;
 }
@@ -1374,6 +1427,270 @@ async function unban(banId){
   }catch(e){showToast('오류 발생');}
 }
 
+
+
+// ── 단원별 집중 학습 ──────────────────────────────────────────────
+const ALL_UNITS = {
+  'e1': [['덧셈','초1'],['뺄셈','초1'],['빈칸 채우기','초1']],
+  'e2': [['두 자리 수 덧셈','초2'],['두 자리 수 뺄셈','초2'],['곱셈 기초','초2']],
+  'e3': [['곱셈구구','초3'],['나눗셈','초3'],['세 자리 수 덧셈','초3'],['분수와 소수','초3']],
+  'e4': [['넓이','초4'],['분수의 덧셈','초4'],['나눗셈','초4'],['정사각형 넓이','초4']],
+  'e5': [['분수의 덧셈(통분)','초5'],['소수의 나눗셈','초5'],['약수와 배수','초5'],['평균','초5']],
+  'e6': [['분수의 곱셈','초6'],['부피','초6'],['비례식','초6']],
+  'm1': [['소인수분해','중1'],['정수의 곱셈','중1'],['일차방정식','중1'],['좌표평면','중1']],
+  'm2': [['연립방정식','중2'],['일차함수','중2'],['피타고라스 정리','중2'],['확률','중2']],
+  'm3': [['이차방정식','중3'],['이차함수','중3'],['삼각비','중3'],['원의 넓이','중3']],
+  'h1': [['다항식','고1'],['로그','고1'],['등차수열','고1'],['이차부등식','고1']],
+  'h2': [['삼각함수','고2'],['등비수열','고2'],['미분','고2'],['수열의 합','고2']],
+  'h3': [['적분','고3'],['조합','고3'],['확률과 통계','고3'],['극한','고3']],
+};
+
+let selectedUnits = new Set();
+let unitStudyOpen = false;
+let unitStatsCache = {};
+
+function toggleUnitStudy(){
+  unitStudyOpen = !unitStudyOpen;
+  document.getElementById('unit-study-section').style.display = unitStudyOpen ? 'block' : 'none';
+  document.getElementById('unit-toggle-btn').textContent = unitStudyOpen ? '접기' : '펼치기';
+  if(unitStudyOpen) renderUnitStudyGrid();
+}
+
+async function renderUnitStudyGrid(){
+  const grid = document.getElementById('unit-study-grid');
+  grid.innerHTML = '';
+  // 단원별 정답률 불러오기
+  if(currentUser && Object.keys(unitStatsCache).length === 0){
+    try{
+      const res = await fetch(`${API}/api/unit_stats`,{headers:{Authorization:`Bearer ${authToken}`}});
+      const data = await res.json();
+      (data.stats||[]).forEach(s=>{ unitStatsCache[s.unit] = s; });
+    }catch(e){}
+  }
+  const gradeNames = {e1:'초1',e2:'초2',e3:'초3',e4:'초4',e5:'초5',e6:'초6',m1:'중1',m2:'중2',m3:'중3',h1:'고1',h2:'고2',h3:'고3'};
+  Object.entries(ALL_UNITS).forEach(([gid, units])=>{
+    const section = document.createElement('div');
+    section.className = 'unit-study-grade-section';
+    section.innerHTML = `<div class="unit-study-grade-label">${gradeNames[gid]}</div>`;
+    const row = document.createElement('div');
+    row.className = 'unit-study-row';
+    units.forEach(([unit, gradeLabel])=>{
+      const stat = unitStatsCache[unit];
+      const acc = stat ? Math.round(stat.correct/stat.total*100) : null;
+      const accColor = acc===null?'':acc>=80?'var(--green)':acc>=50?'var(--yellow)':'var(--red)';
+      const btn = document.createElement('button');
+      btn.className = 'unit-study-btn' + (selectedUnits.has(unit)?' selected':'');
+      btn.innerHTML = `${unit}${acc!==null?`<span class="unit-study-acc" style="color:${accColor}">${acc}%</span>`:''}`;
+      btn.onclick = () => {
+        if(selectedUnits.has(unit)) selectedUnits.delete(unit);
+        else selectedUnits.add(unit);
+        btn.classList.toggle('selected', selectedUnits.has(unit));
+      };
+      row.appendChild(btn);
+    });
+    section.appendChild(row);
+    grid.appendChild(section);
+  });
+}
+
+function clearUnitStudy(){
+  selectedUnits.clear();
+  document.querySelectorAll('.unit-study-btn').forEach(b=>b.classList.remove('selected'));
+}
+
+// ── 난이도 & 타이머 설정 ─────────────────────────────────────────
+let difficulty = 'normal';
+let timerSeconds = 0;
+let timerInterval = null;
+let timeLeft = 0;
+
+function selectDiff(d){
+  difficulty = d;
+  document.querySelectorAll('[data-diff]').forEach(b=>{
+    b.classList.toggle('selected', b.dataset.diff === d);
+  });
+}
+
+function selectTimer(t){
+  timerSeconds = t;
+  document.querySelectorAll('[data-timer]').forEach(b=>{
+    b.classList.toggle('selected', parseInt(b.dataset.timer) === t);
+  });
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  if(!timerSeconds){
+    document.getElementById('timer-bar').style.display='none';
+    document.getElementById('timer-text').style.display='none';
+    return;
+  }
+  timeLeft = timerSeconds;
+  document.getElementById('timer-bar').style.display='block';
+  document.getElementById('timer-text').style.display='block';
+  updateTimerUI();
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    updateTimerUI();
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      // 시간 초과 처리
+      document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+      document.getElementById('ans-input').disabled=true;
+      document.getElementById('confirm-btn').disabled=true;
+      total++;
+      streak=0;
+      document.getElementById('question-card').className='question-card wrong';
+      const fb=document.getElementById('feedback');
+      fb.className='feedback wrong show';
+      fb.innerHTML=`<div class="feedback-top">⏰ 시간 초과!</div><div class="feedback-answer">정답: ${curAnswer}</div>`;
+      updateStats();
+      document.getElementById('next-btn').style.display='block';
+      // 오답 저장
+      if(currentUser&&curFeedback)saveWrongNote(curFeedback);
+    }
+  },1000);
+}
+
+function updateTimerUI(){
+  const pct=timeLeft/timerSeconds*100;
+  const fill=document.getElementById('timer-fill');
+  const text=document.getElementById('timer-text');
+  fill.style.width=pct+'%';
+  fill.style.background=pct>50?'var(--green)':pct>25?'var(--yellow)':'var(--red)';
+  text.textContent=`⏱ ${timeLeft}초`;
+  text.className='timer-text'+(pct<=50?' warn':'')+(pct<=25?' danger':'');
+}
+
+function stopTimer(){clearInterval(timerInterval);}
+
+// ── 오답 노트 ────────────────────────────────────────────────────
+async function saveWrongNote(q){
+  if(!authToken||!currentUser)return;
+  try{
+    await fetch(`${API}/api/wrong_notes`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`},
+      body:JSON.stringify({
+        grade:q.unit,unit:q.unit,
+        question:q.question,answer:q.answer,
+        steps:q.steps,concept:q.concept
+      }),
+    });
+    // 배지 업데이트
+    updateWrongBadge();
+  }catch(e){}
+}
+
+async function updateWrongBadge(){
+  if(!authToken)return;
+  try{
+    const res=await fetch(`${API}/api/wrong_notes`,{headers:{Authorization:`Bearer ${authToken}`}});
+    const data=await res.json();
+    const badge=document.getElementById('wrong-badge');
+    const count=data.notes?.length||0;
+    badge.textContent=count;
+    badge.style.display=count>0?'inline':'none';
+  }catch(e){}
+}
+
+async function loadWrongNotes(){
+  if(!currentUser){
+    document.getElementById('wrong-list').innerHTML='<div class="empty-ranking">로그인이 필요해요</div>';
+    return;
+  }
+  const list=document.getElementById('wrong-list');
+  list.innerHTML='<div class="empty-ranking">불러오는 중…</div>';
+  try{
+    const res=await fetch(`${API}/api/wrong_notes`,{headers:{Authorization:`Bearer ${authToken}`}});
+    const data=await res.json();
+    if(!data.notes||data.notes.length===0){
+      list.innerHTML='<div class="empty-ranking">오답이 없어요! 👍</div>';
+      return;
+    }
+    list.innerHTML='';
+    data.notes.forEach(n=>{
+      let steps=[];
+      try{steps=JSON.parse(n.steps)||[];}catch(e){}
+      const stepsHtml=steps.map((s,i)=>`<div class="step"><span class="step-num">${i+1}</span><div class="step-body">${s.title?`<div class="step-title">${s.title}</div>`:''}<div class="step-calc">${s.calc||''}</div></div></div>`).join('');
+      list.innerHTML+=`<div class="wrong-note-card" id="note-${n.id}">
+        <div class="wrong-note-header">
+          <span class="wrong-note-grade">${n.grade||'—'}</span>
+          <span class="wrong-note-unit">${n.unit||''}</span>
+        </div>
+        <div class="wrong-note-q">${n.question}</div>
+        <div class="wrong-note-ans">정답: <strong>${n.answer}</strong></div>
+        ${stepsHtml?`<div class="steps" style="margin-bottom:10px">${stepsHtml}</div>`:''}
+        ${n.concept?`<div class="concept-box"><div class="concept-label">핵심 개념</div><div class="concept-text">${n.concept}</div></div>`:''}
+        <div class="wrong-note-btns" style="margin-top:10px">
+          <button class="solve-btn" onclick="solveNote(${n.id})">✅ 이해했어요</button>
+          <button class="del-note-btn" onclick="deleteNote(${n.id})">🗑</button>
+        </div>
+      </div>`;
+    });
+  }catch(e){list.innerHTML='<div class="empty-ranking">불러오지 못했어요.</div>';}
+}
+
+async function solveNote(id){
+  try{
+    await fetch(`${API}/api/wrong_notes`,{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`},body:JSON.stringify({id})});
+    document.getElementById(`note-${id}`).remove();
+    updateWrongBadge();
+    showToast('✅ 오답 노트에서 제거됐어요!');
+  }catch(e){}
+}
+
+async function deleteNote(id){
+  try{
+    await fetch(`${API}/api/wrong_notes`,{method:'DELETE',headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`},body:JSON.stringify({id})});
+    document.getElementById(`note-${id}`).remove();
+    updateWrongBadge();
+  }catch(e){}
+}
+
+// ── 단원별 통계 ──────────────────────────────────────────────────
+async function loadUnitStats(){
+  if(!currentUser){
+    document.getElementById('stats-list').innerHTML='<div class="empty-ranking">로그인이 필요해요</div>';
+    return;
+  }
+  const list=document.getElementById('stats-list');
+  list.innerHTML='<div class="empty-ranking">불러오는 중…</div>';
+  try{
+    const res=await fetch(`${API}/api/unit_stats`,{headers:{Authorization:`Bearer ${authToken}`}});
+    const data=await res.json();
+    if(!data.stats||data.stats.length===0){
+      list.innerHTML='<div class="empty-ranking">아직 기록이 없어요</div>';
+      return;
+    }
+    // 정답률 낮은 순 (취약 단원)
+    const sorted=[...data.stats].sort((a,b)=>a.accuracy-b.accuracy);
+    list.innerHTML='<div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:12px;">⚠️ 취약 단원 순</div>';
+    sorted.forEach(s=>{
+      const acc=s.accuracy||0;
+      const color=acc>=80?'var(--green)':acc>=50?'var(--yellow)':'var(--red)';
+      list.innerHTML+=`<div class="unit-stat-row">
+        <div class="unit-stat-top">
+          <span class="unit-stat-name">${s.unit}</span>
+          <span class="unit-stat-acc" style="color:${color}">${acc}%</span>
+        </div>
+        <div class="unit-stat-bar"><div class="unit-stat-fill" style="width:${acc}%;background:${color}"></div></div>
+        <div class="unit-stat-count">${s.correct}/${s.total}문제 정답</div>
+      </div>`;
+    });
+  }catch(e){list.innerHTML='<div class="empty-ranking">불러오지 못했어요.</div>';}
+}
+
+// ── 점수 공유 ────────────────────────────────────────────────────
+function shareScore(){
+  const text=`수학 퀴즈에서 ${score}점을 획득했어요! 🎉\n정답률 ${total>0?Math.round(correct/total*100):0}% · ${total}문제 풀이\nhttps://mathert.pages.dev`;
+  if(navigator.share){
+    navigator.share({title:'수학 퀴즈 결과',text});
+  }else{
+    navigator.clipboard.writeText(text).then(()=>showToast('📋 클립보드에 복사됐어요!'));
+  }
+}
+
 function logout(){
   authToken=null;currentUser=null;
   localStorage.removeItem('auth_token');
@@ -1404,10 +1721,20 @@ function loadQuestion(){
   const arr=[...selected];
   const gid=arr[rnd(0,arr.length-1)];
   const g=GRADES.find(x=>x.id===gid);
-  const q=GENERATORS[gid]();
+  let q=GENERATORS[gid]();
+  // 단원 필터: 선택된 단원이 있으면 해당 단원 문제가 나올 때까지 재시도 (최대 10회)
+  if(selectedUnits.size>0){
+    let tries=0;
+    while(!selectedUnits.has(q.unit)&&tries<20){
+      const gid2=arr[rnd(0,arr.length-1)];
+      q=GENERATORS[gid2]();
+      tries++;
+    }
+  }
 
   document.getElementById('q-grade').textContent=g.label;
   document.getElementById('q-unit').textContent=q.unit;
+  startTimer();
   document.getElementById('question-text').textContent=q.question;
   curFeedback=q;
   curAnswer=String(q.answer).trim();
@@ -1510,10 +1837,14 @@ function resolve(ok,correctText){
 
   updateStats();
   document.getElementById('next-btn').style.display='block';
-  // 이번 문제 점수만 저장 (누적X)
+  stopTimer();
+  // 이번 문제 점수만 저장
   const thisScore=ok?Math.max(10,10*streak):0;
   const thisCorrect=ok?1:0;
-  if(currentUser&&curFeedback)saveResult(curFeedback.unit,thisScore,thisCorrect,1,streak);
+  if(currentUser&&curFeedback){
+    saveResult(curFeedback.unit,thisScore,thisCorrect,1,streak);
+    if(!ok)saveWrongNote(curFeedback);
+  }
 }
 
 initAuth();
