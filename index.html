@@ -1207,23 +1207,23 @@ async function loadAdminPanel(){
     data.users.forEach(u=>{
       const acc=u.total_answered>0?Math.round(u.total_correct/u.total_answered*100):0;
       const initial=u.name?u.name[0]:'?';
-      const recs=(u.records||[]).slice(0,3).map(r=>`
+      const recs=(u.records||[]).slice(0,5).map(r=>`
         <div class="admin-record-row">
           <span>${r.grade}</span>
           <span>${r.score}점</span>
           <span>${r.accuracy}%</span>
-          <span>${new Date(r.created_at).toLocaleDateString()}</span>
+          <span>${new Date(r.created_at).toLocaleDateString('ko-KR')}</span>
         </div>`).join('');
       list.innerHTML+=`<div class="admin-card">
         <div class="admin-user-header">
-          ${u.avatar?`<img class="admin-user-avatar" src="${u.avatar}">`:`<div class="admin-user-placeholder">${initial}</div>`}
-          <div><div class="admin-user-name">${u.name}</div><div class="admin-user-email">${u.email}</div></div>
+          ${u.avatar?`<img class="admin-user-avatar" src="${u.avatar}" onerror="this.style.display='none'">`:`<div class="admin-user-placeholder">${initial}</div>`}
+          <div><div class="admin-user-name">${u.name}</div><div class="admin-user-email">${u.email||''}</div></div>
         </div>
         <div class="admin-stats">
-          <div class="admin-stat"><div class="admin-stat-val">${u.total_score}</div><div class="admin-stat-label">점수</div></div>
-          <div class="admin-stat"><div class="admin-stat-val">${u.total_answered}</div><div class="admin-stat-label">문제수</div></div>
+          <div class="admin-stat"><div class="admin-stat-val">${(u.total_score||0).toLocaleString()}</div><div class="admin-stat-label">점수</div></div>
+          <div class="admin-stat"><div class="admin-stat-val">${u.total_answered||0}</div><div class="admin-stat-label">문제수</div></div>
           <div class="admin-stat"><div class="admin-stat-val">${acc}%</div><div class="admin-stat-label">정답률</div></div>
-          <div class="admin-stat"><div class="admin-stat-val">${u.best_streak}🔥</div><div class="admin-stat-label">최고연속</div></div>
+          <div class="admin-stat"><div class="admin-stat-val">${u.best_streak||0}🔥</div><div class="admin-stat-label">최고연속</div></div>
         </div>
         ${recs?`<div class="admin-records"><div class="admin-records-title">최근 기록</div>${recs}</div>`:''}
       </div>`;
