@@ -96,6 +96,64 @@ body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-ap
 .toast{position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--text-primary);color:#fff;border-radius:999px;padding:10px 22px;font-size:14px;font-weight:700;opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:200;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 @media(max-width:480px){.grade-grid{grid-template-columns:repeat(3,1fr);}}
+
+.tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);}
+.tab-btn{flex:1;padding:14px;font-family:inherit;font-size:14px;font-weight:600;color:var(--text-tertiary);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
+.ranking-wrap{padding:20px;}
+.ranking-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.ranking-title{font-size:16px;font-weight:700;}
+.refresh-btn{background:none;border:1.5px solid var(--border);border-radius:999px;padding:6px 14px;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:all 0.15s;}
+.refresh-btn:hover{border-color:var(--blue);color:var(--blue);}
+.rank-card{background:var(--white);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm);border:1.5px solid var(--border);}
+.rank-card.me{border-color:var(--blue);background:var(--blue-light);}
+.rank-num{font-size:18px;font-weight:800;width:28px;text-align:center;flex-shrink:0;}
+.rank-num.gold{color:#f5a623;}.rank-num.silver{color:#9b9b9b;}.rank-num.bronze{color:#c87533;}
+.rank-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.rank-avatar-placeholder{width:36px;height:36px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;}
+.rank-info{flex:1;min-width:0;}
+.rank-name{font-size:14px;font-weight:700;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rank-stats{font-size:12px;color:var(--text-tertiary);}
+.rank-score{font-size:18px;font-weight:800;color:var(--blue);}
+.empty-ranking{text-align:center;padding:48px 20px;color:var(--text-tertiary);font-size:14px;}
+.profile-wrap{padding:20px;}
+.profile-card{background:var(--white);border-radius:var(--radius-xl);padding:28px 24px;box-shadow:var(--shadow-md);margin-bottom:16px;text-align:center;}
+.profile-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;margin:0 auto 12px;}
+.profile-avatar-placeholder{width:72px;height:72px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;margin:0 auto 12px;}
+.profile-name{font-size:20px;font-weight:800;margin-bottom:4px;}
+.profile-email{font-size:13px;color:var(--text-tertiary);margin-bottom:20px;}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.profile-stat{background:var(--bg);border-radius:var(--radius-sm);padding:14px 8px;text-align:center;}
+.profile-stat-val{font-size:22px;font-weight:800;color:var(--blue);margin-bottom:4px;}
+.profile-stat-label{font-size:11px;color:var(--text-tertiary);font-weight:500;}
+.records-title{font-size:14px;font-weight:700;margin-bottom:12px;}
+.record-item{background:var(--white);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+.record-grade{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:2px;}
+.record-date{font-size:11px;color:var(--text-tertiary);}
+.record-score{font-size:16px;font-weight:800;}
+.record-acc{font-size:11px;color:var(--text-tertiary);}
+
+.admin-wrap{padding:20px;}
+.admin-title{font-size:16px;font-weight:700;margin-bottom:16px;}
+.admin-card{background:var(--white);border-radius:var(--radius-md);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);border:1.5px solid var(--border);}
+.admin-user-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.admin-user-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.admin-user-placeholder{width:36px;height:36px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;}
+.admin-user-name{font-size:14px;font-weight:700;}
+.admin-user-email{font-size:12px;color:var(--text-tertiary);}
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.admin-stat{background:var(--bg);border-radius:8px;padding:8px;text-align:center;}
+.admin-stat-val{font-size:14px;font-weight:800;color:var(--blue);}
+.admin-stat-label{font-size:10px;color:var(--text-tertiary);}
+.admin-records{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.admin-records-title{font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:6px;}
+.admin-record-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);}
+.logout-btn{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:16px;color:var(--red);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-top:8px;}
+.logout-btn:hover{border-color:var(--red);background:var(--red-light);}
+.login-prompt{text-align:center;padding:48px 24px;}
+.login-prompt-icon{font-size:48px;margin-bottom:16px;}
+.login-prompt-title{font-size:18px;font-weight:800;margin-bottom:8px;}
+.login-prompt-desc{font-size:14px;color:var(--text-secondary);margin-bottom:24px;line-height:1.6;}
 .login-btn{background:var(--white);border:1.5px solid var(--border);border-radius:999px;padding:6px 14px;font-family:inherit;font-size:13px;font-weight:600;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
 .login-btn:hover{border-color:var(--blue);color:var(--blue);}
 .user-chip{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px 5px 6px;cursor:pointer;}
@@ -117,6 +175,14 @@ body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-ap
     <div class="stat-item"><div class="stat-label">정답률</div><div class="stat-value green" id="rate-val">—</div></div>
     <div class="stat-item"><div class="stat-label">문제 수</div><div class="stat-value" id="total-val">0</div></div>
   </div>
+  <div class="tabs" id="main-tabs">
+    <button class="tab-btn active" onclick="showTab('quiz')">퀴즈</button>
+    <button class="tab-btn" onclick="showTab('ranking')">🏆 랭킹</button>
+    <button class="tab-btn" onclick="showTab('profile')">내 기록</button>
+    <button class="tab-btn" id="admin-tab-btn" style="display:none" onclick="showTab('admin')">🔧 관리</button>
+  </div>
+
+  <div id="tab-quiz">
   <div id="setup-screen">
     <div class="section">
       <div class="section-label">빠른 선택</div>
@@ -168,6 +234,33 @@ body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-ap
       <button class="action-next" id="next-btn" onclick="loadQuestion()">다음 문제</button>
     </div>
   </div>
+</div>
+  </div><!-- tab-quiz -->
+
+  <!-- 랭킹 탭 -->
+  <div id="tab-ranking" style="display:none">
+    <div class="ranking-wrap">
+      <div class="ranking-header">
+        <span class="ranking-title">🏆 전체 랭킹</span>
+        <button class="refresh-btn" onclick="loadRanking()">새로고침</button>
+      </div>
+      <div id="ranking-list"><div class="empty-ranking">불러오는 중…</div></div>
+    </div>
+  </div>
+
+  <!-- 관리자 탭 -->
+  <div id="tab-admin" style="display:none">
+    <div class="admin-wrap">
+      <div class="admin-title">🔧 관리자 패널</div>
+      <div id="admin-user-list"><div class="empty-ranking">불러오는 중…</div></div>
+    </div>
+  </div>
+
+  <!-- 프로필 탭 -->
+  <div id="tab-profile" style="display:none">
+    <div class="profile-wrap" id="profile-content"></div>
+  </div>
+
 </div>
 <div class="toast" id="toast"></div>
 <script>
@@ -965,6 +1058,7 @@ async function fetchMe(){
       streak=currentUser.bestStreak||0;
       updateStats();
       renderAuthArea();
+      checkAdminTab();
     }
   }catch(e){currentUser=null;}
 }
@@ -981,7 +1075,7 @@ function renderAuthArea(){
       <span>${currentUser.name}</span>
     </div>`;
   }else{
-    area.innerHTML=`<button class="login-btn" onclick="location.href='${API}/api/auth/google'">
+    area.innerHTML=`<button class="login-btn" onclick="location.href='${API}/functions/api/auth/google'">
       <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
       구글 로그인
     </button>`;
@@ -997,6 +1091,148 @@ async function saveResult(grade,score,correct,total,maxStreak){
       body:JSON.stringify({grade,score,correct,total,maxStreak}),
     });
   }catch(e){}
+}
+
+
+// ── 탭 ──────────────────────────────────────────────────────────
+function showTab(name){
+  document.querySelectorAll('[id^="tab-"]').forEach(el=>el.style.display='none');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).style.display='block';
+  const idx={quiz:0,ranking:1,profile:2,admin:3}[name];
+  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  if(name==='ranking')loadRanking();
+  if(name==='profile')renderProfile();
+  if(name==='admin')loadAdminPanel();
+}
+
+// ── 랭킹 ─────────────────────────────────────────────────────────
+async function loadRanking(){
+  const list=document.getElementById('ranking-list');
+  list.innerHTML='<div class="empty-ranking">불러오는 중…</div>';
+  try{
+    const res=await fetch(`${API}/api/ranking`,{headers:{Authorization:`Bearer ${authToken||''}`}});
+    const data=await res.json();
+    if(!data.ranking||data.ranking.length===0){
+      list.innerHTML='<div class="empty-ranking">아직 기록이 없어요!<br>첫 번째 랭커가 되어보세요 🏆</div>';
+      return;
+    }
+    list.innerHTML='';
+    data.ranking.forEach((u,i)=>{
+      const numClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      const isMe=currentUser&&u.name===currentUser.name;
+      const initial=u.name?u.name[0]:'?';
+      const acc=u.total_answered>0?Math.round(u.total_correct/u.total_answered*100):0;
+      list.innerHTML+=`<div class="rank-card${isMe?' me':''}">
+        <span class="rank-num ${numClass}">${i+1}</span>
+        ${u.avatar?`<img class="rank-avatar" src="${u.avatar}">`:`<div class="rank-avatar-placeholder">${initial}</div>`}
+        <div class="rank-info">
+          <div class="rank-name">${u.name}${isMe?' (나)':''}</div>
+          <div class="rank-stats">정답률 ${acc}% · 최고연속 ${u.best_streak}🔥</div>
+        </div>
+        <span class="rank-score">${u.total_score.toLocaleString()}</span>
+      </div>`;
+    });
+  }catch(e){list.innerHTML='<div class="empty-ranking">랭킹을 불러오지 못했어요.</div>';}
+}
+
+// ── 프로필 ────────────────────────────────────────────────────────
+function renderProfile(){
+  const wrap=document.getElementById('profile-content');
+  if(!currentUser){
+    wrap.innerHTML=`<div class="login-prompt">
+      <div class="login-prompt-icon">👤</div>
+      <div class="login-prompt-title">로그인이 필요해요</div>
+      <div class="login-prompt-desc">구글 로그인을 하면<br>점수와 기록이 저장돼요!</div>
+      <button class="login-btn" onclick="location.href='${API}/api/auth/google'" style="margin:0 auto;">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        구글로 로그인
+      </button>
+    </div>`;
+    return;
+  }
+  const acc=currentUser.totalAnswered>0?Math.round(currentUser.totalCorrect/currentUser.totalAnswered*100):0;
+  const initial=currentUser.name?currentUser.name[0]:'?';
+  const recs=[...(currentUser.records||[])].slice(0,10);
+  let recordsHtml='';
+  recs.forEach(r=>{
+    const d=new Date(r.created_at);
+    const dateStr=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    recordsHtml+=`<div class="record-item">
+      <div><div class="record-grade">${r.grade||'—'}</div><div class="record-date">${dateStr}</div></div>
+      <div style="text-align:right"><div class="record-score">${r.score}점</div><div class="record-acc">${r.accuracy}% 정확도</div></div>
+    </div>`;
+  });
+  wrap.innerHTML=`
+    <div class="profile-card">
+      ${currentUser.avatar?`<img class="profile-avatar" src="${currentUser.avatar}">`:`<div class="profile-avatar-placeholder">${initial}</div>`}
+      <div class="profile-name">${currentUser.name}</div>
+      <div class="profile-email">${currentUser.email||''}</div>
+      <div class="profile-stats">
+        <div class="profile-stat"><div class="profile-stat-val">${currentUser.totalScore.toLocaleString()}</div><div class="profile-stat-label">누적 점수</div></div>
+        <div class="profile-stat"><div class="profile-stat-val">${acc}%</div><div class="profile-stat-label">정답률</div></div>
+        <div class="profile-stat"><div class="profile-stat-val">${currentUser.bestStreak}🔥</div><div class="profile-stat-label">최고 연속</div></div>
+      </div>
+    </div>
+    ${recs.length>0?`<div class="records-title">최근 기록</div>${recordsHtml}`:''}
+    <button class="logout-btn" onclick="logout()">로그아웃</button>
+  `;
+}
+
+
+// ── 관리자 ────────────────────────────────────────────────────────
+const ADMIN_EMAIL = 'kmimseo1203@gmail.com';
+
+function isAdmin(){return currentUser&&currentUser.email===ADMIN_EMAIL;}
+
+function checkAdminTab(){
+  const btn=document.getElementById('admin-tab-btn');
+  if(btn)btn.style.display=isAdmin()?'block':'none';
+}
+
+async function loadAdminPanel(){
+  if(!isAdmin()){document.getElementById('admin-user-list').innerHTML='<div class="empty-ranking">권한 없음</div>';return;}
+  const list=document.getElementById('admin-user-list');
+  list.innerHTML='<div class="empty-ranking">불러오는 중…</div>';
+  try{
+    const res=await fetch(`${API}/api/admin/users`,{headers:{Authorization:`Bearer ${authToken}`}});
+    const data=await res.json();
+    if(!data.users||data.users.length===0){list.innerHTML='<div class="empty-ranking">유저 없음</div>';return;}
+    list.innerHTML='';
+    data.users.forEach(u=>{
+      const acc=u.total_answered>0?Math.round(u.total_correct/u.total_answered*100):0;
+      const initial=u.name?u.name[0]:'?';
+      const recs=(u.records||[]).slice(0,3).map(r=>`
+        <div class="admin-record-row">
+          <span>${r.grade}</span>
+          <span>${r.score}점</span>
+          <span>${r.accuracy}%</span>
+          <span>${new Date(r.created_at).toLocaleDateString()}</span>
+        </div>`).join('');
+      list.innerHTML+=`<div class="admin-card">
+        <div class="admin-user-header">
+          ${u.avatar?`<img class="admin-user-avatar" src="${u.avatar}">`:`<div class="admin-user-placeholder">${initial}</div>`}
+          <div><div class="admin-user-name">${u.name}</div><div class="admin-user-email">${u.email}</div></div>
+        </div>
+        <div class="admin-stats">
+          <div class="admin-stat"><div class="admin-stat-val">${u.total_score}</div><div class="admin-stat-label">점수</div></div>
+          <div class="admin-stat"><div class="admin-stat-val">${u.total_answered}</div><div class="admin-stat-label">문제수</div></div>
+          <div class="admin-stat"><div class="admin-stat-val">${acc}%</div><div class="admin-stat-label">정답률</div></div>
+          <div class="admin-stat"><div class="admin-stat-val">${u.best_streak}🔥</div><div class="admin-stat-label">최고연속</div></div>
+        </div>
+        ${recs?`<div class="admin-records"><div class="admin-records-title">최근 기록</div>${recs}</div>`:''}
+      </div>`;
+    });
+  }catch(e){list.innerHTML='<div class="empty-ranking">불러오지 못했어요.</div>';}
+}
+
+function logout(){
+  authToken=null;currentUser=null;
+  localStorage.removeItem('auth_token');
+  score=0;streak=0;total=0;correct=0;
+  updateStats();
+  renderAuthArea();
+  showTab('quiz');
 }
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
