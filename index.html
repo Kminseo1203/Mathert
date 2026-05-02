@@ -1096,11 +1096,16 @@ async function saveResult(grade,score,correct,total,maxStreak){
 
 // ── 탭 ──────────────────────────────────────────────────────────
 function showTab(name){
-  document.querySelectorAll('[id^="tab-"]').forEach(el=>el.style.display='none');
+  ['quiz','ranking','profile','admin'].forEach(t=>{
+    const el=document.getElementById('tab-'+t);
+    if(el)el.style.display='none';
+  });
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).style.display='block';
+  const el=document.getElementById('tab-'+name);
+  if(el)el.style.display='block';
   const idx={quiz:0,ranking:1,profile:2,admin:3}[name];
-  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  const btns=document.querySelectorAll('.tab-btn');
+  if(btns[idx])btns[idx].classList.add('active');
   if(name==='ranking')loadRanking();
   if(name==='profile')renderProfile();
   if(name==='admin')loadAdminPanel();
