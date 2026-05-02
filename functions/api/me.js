@@ -19,6 +19,21 @@ export async function onRequest(context) {
     const user = await db.prepare('SELECT * FROM users WHERE google_id = ?').bind(payload.googleId).first();
     if (!user) return new Response(JSON.stringify({ user: null }), { headers: { ...cors, 'Content-Type': 'application/json' } });
 
+    // 밴 체크
+    const ban = await db.prepare(`
+      SELECT * FROM bans WHERE user_id = ?
+      AND (ban_type = 'permanent' OR (ban_type = 'temp' AND expires_at > datetime('now')))
+      LIMIT 1
+    `).bind(user.id).first();
+    if (ban) {
+      const msg = ban.ban_type === 'temp'
+        ? `일시 정지됨. 해제 시간: ${ban.expires_at} (사유: ${ban.reason})`
+        : `영구 정지됨. 사유: ${ban.reason}`;
+      return new Response(JSON.stringify({ user: null, banned: true, reason: msg }), {
+        headers: { ...cors, 'Content-Type': 'application/json' },
+      });
+    }
+
     const records = await db.prepare('SELECT * FROM records WHERE user_id = ? ORDER BY created_at DESC LIMIT 10').bind(user.id).all();
 
     return new Response(JSON.stringify({
