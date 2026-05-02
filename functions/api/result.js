@@ -75,6 +75,18 @@ export async function onRequest(context) {
       )
     `).bind(user.id, user.id).run();
 
+    // 단원 통계 업데이트
+    if (grade) {
+      const existing = await db.prepare('SELECT id FROM unit_stats WHERE user_id = ? AND unit = ?').bind(user.id, grade).first();
+      if (existing) {
+        await db.prepare('UPDATE unit_stats SET correct = correct + ?, total = total + 1 WHERE user_id = ? AND unit = ?')
+          .bind(correct > 0 ? 1 : 0, user.id, grade).run();
+      } else {
+        await db.prepare('INSERT INTO unit_stats (user_id, unit, correct, total) VALUES (?, ?, ?, 1)')
+          .bind(user.id, grade, correct > 0 ? 1 : 0).run();
+      }
+    }
+
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...cors, 'Content-Type': 'application/json' },
     });
