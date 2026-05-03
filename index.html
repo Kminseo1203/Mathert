@@ -29,6 +29,8 @@ body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-ap
 .grade-btn{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 8px;font-family:inherit;font-size:14px;font-weight:700;color:var(--text-secondary);cursor:pointer;transition:all 0.15s;text-align:center;box-shadow:var(--shadow-sm);}
 .grade-btn:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-1px);box-shadow:var(--shadow-md);}
 .grade-btn.selected{background:var(--blue-light);border-color:var(--blue);color:var(--blue);box-shadow:none;}
+.grade-btn.easy.selected{background:#e5f9f1;border-color:var(--green);color:#007a47;box-shadow:none;}
+.grade-btn.hard.selected{background:var(--red-light);border-color:var(--red);color:var(--red);box-shadow:none;}
 .cta-section{padding:20px 20px 0;}
 .cta-btn{width:100%;background:var(--blue);border:none;border-radius:var(--radius-md);padding:18px;color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:-0.2px;box-shadow:0 4px 16px rgba(49,130,246,0.28);}
 .cta-btn:hover:not(:disabled){background:var(--blue-dark);transform:translateY(-1px);}
@@ -212,24 +214,24 @@ body{background:var(--bg);color:var(--text-primary);font-family:'Pretendard',-ap
   <div id="setup-screen">
     <div class="section">
       <div class="section-label">난이도</div>
-      <div class="diff-row">
-        <button class="diff-btn easy" data-diff="easy" onclick="selectDiff('easy')">😊 쉬움</button>
-        <button class="diff-btn selected" data-diff="normal" onclick="selectDiff('normal')">📚 보통</button>
-        <button class="diff-btn hard" data-diff="hard" onclick="selectDiff('hard')">🔥 어려움</button>
+      <div class="grade-grid" style="margin-bottom:16px;">
+        <button class="grade-btn easy" data-diff="easy" onclick="selectDiff('easy')">😊 쉬움</button>
+        <button class="grade-btn selected" data-diff="normal" onclick="selectDiff('normal')">📚 보통</button>
+        <button class="grade-btn hard" data-diff="hard" onclick="selectDiff('hard')">🔥 어려움</button>
       </div>
       <div class="section-label">타이머</div>
-      <div class="diff-row" style="margin-bottom:20px;">
-        <button class="diff-btn selected" data-timer="0" onclick="selectTimer(0)">∞ 무제한</button>
-        <button class="diff-btn" data-timer="60" onclick="selectTimer(60)">⏱ 60초</button>
-        <button class="diff-btn" data-timer="30" onclick="selectTimer(30)">⚡ 30초</button>
+      <div class="grade-grid" style="margin-bottom:20px;">
+        <button class="grade-btn selected" data-timer="0" onclick="selectTimer(0)">∞ 무제한</button>
+        <button class="grade-btn" data-timer="60" onclick="selectTimer(60)">⏱ 60초</button>
+        <button class="grade-btn" data-timer="30" onclick="selectTimer(30)">⚡ 30초</button>
       </div>
       <div class="section-label" style="display:flex;align-items:center;justify-content:space-between;">
         단원별 집중 학습
-        <button class="chip" id="unit-toggle-btn" onclick="toggleUnitStudy()" style="font-size:11px;padding:4px 10px;">펼치기</button>
+        <button class="chip" id="unit-toggle-btn" onclick="toggleUnitStudy()">펼치기</button>
       </div>
       <div id="unit-study-section" style="display:none;margin-bottom:16px;">
-        <div class="unit-study-grid" id="unit-study-grid"></div>
-        <button class="chip" onclick="clearUnitStudy()" style="width:100%;border-radius:var(--radius-sm);padding:10px;">단원 선택 해제</button>
+        <div id="unit-study-grid"></div>
+        <button class="chip" onclick="clearUnitStudy()" style="margin-top:4px;">✕ 단원 선택 해제</button>
       </div>
       <div class="section-label">빠른 선택</div>
       <div class="quick-row">
@@ -1469,27 +1471,35 @@ async function renderUnitStudyGrid(){
   }
   const gradeNames = {e1:'초1',e2:'초2',e3:'초3',e4:'초4',e5:'초5',e6:'초6',m1:'중1',m2:'중2',m3:'중3',h1:'고1',h2:'고2',h3:'고3'};
   Object.entries(ALL_UNITS).forEach(([gid, units])=>{
-    const section = document.createElement('div');
-    section.className = 'unit-study-grade-section';
-    section.innerHTML = `<div class="unit-study-grade-label">${gradeNames[gid]}</div>`;
+    // 학년 라벨
+    const label = document.createElement('div');
+    label.className = 'section-label';
+    label.style.marginTop = '8px';
+    label.textContent = gradeNames[gid];
+    grid.appendChild(label);
+    // 칩 행
     const row = document.createElement('div');
-    row.className = 'unit-study-row';
-    units.forEach(([unit, gradeLabel])=>{
+    row.className = 'quick-row';
+    units.forEach(([unit])=>{
       const stat = unitStatsCache[unit];
       const acc = stat ? Math.round(stat.correct/stat.total*100) : null;
       const accColor = acc===null?'':acc>=80?'var(--green)':acc>=50?'var(--yellow)':'var(--red)';
       const btn = document.createElement('button');
-      btn.className = 'unit-study-btn' + (selectedUnits.has(unit)?' selected':'');
-      btn.innerHTML = `${unit}${acc!==null?`<span class="unit-study-acc" style="color:${accColor}">${acc}%</span>`:''}`;
+      btn.className = 'chip' + (selectedUnits.has(unit)?' selected':'');
+      btn.style.cssText = selectedUnits.has(unit)?'border-color:var(--blue);color:var(--blue);background:var(--blue-light);':'';
+      btn.innerHTML = unit + (acc!==null?` <span style="font-size:10px;color:${accColor};font-weight:800;">${acc}%</span>`:'');
       btn.onclick = () => {
-        if(selectedUnits.has(unit)) selectedUnits.delete(unit);
-        else selectedUnits.add(unit);
-        btn.classList.toggle('selected', selectedUnits.has(unit));
+        if(selectedUnits.has(unit)){
+          selectedUnits.delete(unit);
+          btn.style.cssText='';
+        }else{
+          selectedUnits.add(unit);
+          btn.style.cssText='border-color:var(--blue);color:var(--blue);background:var(--blue-light);';
+        }
       };
       row.appendChild(btn);
     });
-    section.appendChild(row);
-    grid.appendChild(section);
+    grid.appendChild(row);
   });
 }
 
