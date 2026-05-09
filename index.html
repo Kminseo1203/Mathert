@@ -397,6 +397,1758 @@ function simplify(n,d){const g=gcd(Math.abs(n),Math.abs(d));return[n/g,d/g];}
 const GENERATORS = {
 
   // ════════════════════════════════════════
+  // 초1 - 수와 연산
+  // ════════════════════════════════════════
+  e1: () => {
+    const type = rnd(1, 8);
+    if (type === 1) {
+      const a=rnd(1,9), b=rnd(1,9-a);
+      return { question:`사탕이 ${a}개 있었는데 친구에게 ${b}개를 더 받았습니다. 사탕은 모두 몇 개인가요?`, answer:`${a+b}`, unit:'한 자리 수 덧셈', type:'short',
+        steps:[{title:'덧셈식',calc:`${a} + ${b} = ${a+b}`,desc:'두 수를 더합니다.'}], concept:'합계 = 처음 수 + 더하는 수' };
+    } else if (type === 2) {
+      const b=rnd(1,8), a=rnd(b+1,9);
+      return { question:`구슬이 ${a}개 있었는데 ${b}개를 잃어버렸습니다. 남은 구슬은 몇 개인가요?`, answer:`${a-b}`, unit:'한 자리 수 뺄셈', type:'short',
+        steps:[{title:'뺄셈식',calc:`${a} - ${b} = ${a-b}`,desc:'큰 수에서 작은 수를 뺍니다.'}], concept:'남은 양 = 처음 수 - 없어진 수' };
+    } else if (type === 3) {
+      const a=rnd(1,5), b=rnd(1,5);
+      return { question:`□ 안에 알맞은 수를 구하세요.\n${a} + □ = ${a+b}`, answer:`${b}`, unit:'덧셈과 뺄셈의 관계', type:'short',
+        steps:[{title:'역산',calc:`${a+b} - ${a} = ${b}`,desc:'전체에서 알고 있는 수를 빼면 모르는 수를 구할 수 있습니다.'}], concept:'□ = 전체 - 한쪽' };
+    } else if (type === 4) {
+      const a=rnd(10,19), b=rnd(1,9);
+      return { question:`${a} + ${b} = ?`, answer:`${a+b}`, unit:'받아올림이 있는 덧셈', type:'short',
+        steps:[{title:'일의 자리',calc:`${a%10} + ${b} = ${(a%10)+b}`,desc:'일의 자리끼리 더합니다. 10이 넘으면 올림합니다.'},{title:'결과',calc:`${a} + ${b} = ${a+b}`,desc:''}], concept:'10이 넘으면 십의 자리로 올림' };
+    } else if (type === 5) {
+      const a=rnd(11,19), b=rnd(1,a-10);
+      return { question:`${a} - ${b} = ?`, answer:`${a-b}`, unit:'받아내림이 있는 뺄셈', type:'short',
+        steps:[{title:'계산',calc:`${a} - ${b} = ${a-b}`,desc:''}], concept:'받아내림: 윗 자리에서 10을 빌려옵니다' };
+    } else if (type === 6) {
+      const n=rnd(1,9);
+      return { question:`${n}을 두 수의 합으로 나타낼 수 있는 방법은 모두 몇 가지인가요? (1+${n-1}, 2+${n-2} 등 순서 다른 것은 같은 것으로)`, answer:`${Math.floor(n/2)}`, unit:'수 가르기', type:'short',
+        steps:[{title:'가르기',calc:`${Array.from({length:Math.floor(n/2)},(_,i)=>`${i+1}+${n-i-1}`).join(', ')}`,desc:'두 수의 합이 되는 경우를 모두 찾습니다.'}], concept:'수 가르기: 한 수를 두 수의 합으로 나타내기' };
+    } else if (type === 7) {
+      const a=rnd(1,5), b=rnd(1,5), c=rnd(1,5);
+      return { question:`${a} + ${b} + ${c} = ?`, answer:`${a+b+c}`, unit:'세 수의 덧셈', type:'short',
+        steps:[{title:'순서대로',calc:`${a} + ${b} = ${a+b}`,desc:'앞 두 수를 먼저 더합니다.'},{title:'결과',calc:`${a+b} + ${c} = ${a+b+c}`,desc:'나머지 수를 더합니다.'}], concept:'세 수 덧셈은 앞에서부터 순서대로' };
+    } else {
+      const total=rnd(5,9), a=rnd(1,total-1);
+      return { question:`${total}개의 사과 중 ${a}개를 먹었습니다. 남은 사과는 몇 개인가요?`, answer:`${total-a}`, unit:'이야기 덧셈뺄셈', type:'short',
+        steps:[{title:'뺄셈',calc:`${total} - ${a} = ${total-a}`,desc:'전체에서 먹은 수를 뺍니다.'}], concept:'남은 것 = 전체 - 없어진 것' };
+    }
+  },
+
+  // ════════════════════════════════════════
+  // 초2 - 수와 연산, 곱셈 기초
+  // ════════════════════════════════════════
+  e2: () => {
+    const type = rnd(1, 9);
+    if (type === 1) {
+      const a=rnd(11,50), b=rnd(11,50);
+      return { question:`${a} + ${b} = ?`, answer:`${a+b}`, unit:'두 자리 수 덧셈', type:'short',
+        steps:[{title:'일의 자리',calc:`${a%10} + ${b%10} = ${(a%10)+(b%10)}`,desc:'일의 자리끼리 더합니다.'+(((a%10)+(b%10))>=10?' 올림 발생!':'')},{title:'십의 자리',calc:`${Math.floor(a/10)} + ${Math.floor(b/10)}${(a%10+b%10)>=10?' + 1':''}= ${Math.floor((a+b)/10)}`,desc:''},{title:'결과',calc:`${a} + ${b} = ${a+b}`,desc:''}], concept:'자리수 맞춰 더하기, 올림 주의' };
+    } else if (type === 2) {
+      const b=rnd(11,40), a=rnd(b+1,90);
+      return { question:`${a} - ${b} = ?`, answer:`${a-b}`, unit:'두 자리 수 뺄셈', type:'short',
+        steps:[{title:'계산',calc:`${a} - ${b} = ${a-b}`,desc:a%10<b%10?'일의 자리가 작으므로 십의 자리에서 받아내림합니다.':'일의 자리끼리 뺍니다.'}], concept:'받아내림: 윗 자리에서 10을 빌려옴' };
+    } else if (type === 3) {
+      const a=rnd(2,5), b=rnd(2,6);
+      return { question:`사탕을 한 봉지에 ${a}개씩 ${b}봉지 샀습니다. 사탕은 모두 몇 개인가요?`, answer:`${a*b}`, unit:'곱셈의 의미', type:'short',
+        steps:[{title:'묶음',calc:`${Array(b).fill(a).join(' + ')} = ${a*b}`,desc:`${a}씩 ${b}번 더한 것과 같습니다.`},{title:'곱셈',calc:`${a} × ${b} = ${a*b}`,desc:''}], concept:'곱셈은 같은 수를 반복해서 더하는 것' };
+    } else if (type === 4) {
+      const a=rnd(2,5), b=rnd(2,9);
+      return { question:`${a} × ${b} = ?`, answer:`${a*b}`, unit:'곱셈구구(2~5단)', type:'short',
+        steps:[{title:`${a}단`,calc:`${a} × ${b} = ${a*b}`,desc:`${a}의 ${b}배`}], concept:`${a}단 곱셈구구` };
+    } else if (type === 5) {
+      const a=rnd(6,9), b=rnd(2,9);
+      return { question:`${a} × ${b} = ?`, answer:`${a*b}`, unit:'곱셈구구(6~9단)', type:'short',
+        steps:[{title:`${a}단`,calc:`${a} × ${b} = ${a*b}`,desc:`${a}의 ${b}배`}], concept:`${a}단 곱셈구구` };
+    } else if (type === 6) {
+      const a=rnd(100,500), b=rnd(100,400);
+      return { question:`${a} + ${b} = ?`, answer:`${a+b}`, unit:'세 자리 수 덧셈', type:'short',
+        steps:[{title:'일의 자리',calc:`${a%10} + ${b%10}`,desc:''},{title:'십의 자리',calc:`${Math.floor(a/10)%10} + ${Math.floor(b/10)%10}`,desc:''},{title:'백의 자리',calc:`${Math.floor(a/100)} + ${Math.floor(b/100)}`,desc:''},{title:'결과',calc:`${a} + ${b} = ${a+b}`,desc:''}], concept:'세 자리 수도 자리수 맞춰 더하기' };
+    } else if (type === 7) {
+      const b=rnd(100,300), a=rnd(b+100,700);
+      return { question:`${a} - ${b} = ?`, answer:`${a-b}`, unit:'세 자리 수 뺄셈', type:'short',
+        steps:[{title:'계산',calc:`${a} - ${b} = ${a-b}`,desc:''}], concept:'세 자리 수 뺄셈' };
+    } else if (type === 8) {
+      const n=rnd(2,9), ans=n*n;
+      return { question:`정사각형 모양으로 ${n}×${n} 배열로 놓인 공의 수는?`, answer:`${ans}`, unit:'배열과 곱셈', type:'short',
+        steps:[{title:'배열',calc:`${n} × ${n} = ${ans}`,desc:`가로 ${n}개, 세로 ${n}개`}], concept:'배열에서 전체 수 = 가로 × 세로' };
+    } else {
+      const a=rnd(1,9);
+      return { question:`1부터 ${a}까지 모든 수의 합은?`, answer:`${a*(a+1)/2}`, unit:'수의 합', type:'short',
+        steps:[{title:'차례로 더하기',calc:`${Array.from({length:a},(_,i)=>i+1).join(' + ')} = ${a*(a+1)/2}`,desc:''}], concept:'1부터 n까지 합 = n×(n+1)/2' };
+    }
+  },
+
+  // ════════════════════════════════════════
+  // 초3 - 곱셈나눗셈, 분수소수 기초
+  // ════════════════════════════════════════
+  e3: () => {
+    const type = rnd(1, 10);
+    if (type === 1) {
+      const a=rnd(2,9), b=rnd(2,9);
+      return { question:`한 줄에 ${a}명씩 ${b}줄로 서 있습니다. 모두 몇 명인가요?`, answer:`${a*b}`, unit:'(두 자리)×(한 자리)', type:'short',
+        steps:[{title:'곱셈',calc:`${a} × ${b} = ${a*b}`,desc:''}], concept:'곱셈구구 활용' };
+    } else if (type === 2) {
+      const b=rnd(2,9), q=rnd(2,9), a=b*q;
+      return { question:`사과 ${a}개를 ${b}명이 똑같이 나누면 한 명이 몇 개씩 받나요?`, answer:`${q}`, unit:'나눗셈', type:'short',
+        steps:[{title:'나눗셈',calc:`${a} ÷ ${b} = ${q}`,desc:`${b} × ${q} = ${a}`}], concept:'나눗셈은 곱셈의 역연산' };
+    } else if (type === 3) {
+      const a=rnd(10,30), b=rnd(2,9), q=Math.floor(a/b), r=a%b;
+      return { question:`${a} ÷ ${b} = ?`, answer:r===0?`${q}`:`${q} … ${r}`, unit:'나머지가 있는 나눗셈', type:'short',
+        steps:[{title:'나눗셈',calc:`${a} ÷ ${b} = ${q} ··· ${r}`,desc:`${b} × ${q} = ${b*q}, ${a} - ${b*q} = ${r}`}], concept:'나눗셈: 몫과 나머지' };
+    } else if (type === 4) {
+      const a=rnd(100,500), b=rnd(100,400);
+      return { question:`${a} + ${b} = ?`, answer:`${a+b}`, unit:'세 자리 수 덧셈', type:'short',
+        steps:[{title:'결과',calc:`${a} + ${b} = ${a+b}`,desc:'자리수 맞춰 계산'}], concept:'세 자리 수 덧셈' };
+    } else if (type === 5) {
+      const n=rnd(1,9);
+      return { question:`색 테이프 1m를 10등분 했습니다. ${n}조각의 길이는 몇 m인가요?`, answer:`${(n/10).toFixed(1)}`, unit:'분수와 소수', type:'short',
+        steps:[{title:'분수',calc:`${n}/10`,desc:''},{title:'소수',calc:`${n}/10 = ${(n/10).toFixed(1)}`,desc:'분모가 10이면 소수 한 자리'}], concept:'1/10 = 0.1' };
+    } else if (type === 6) {
+      const d=rnd(2,8), n1=rnd(1,d-1), n2=rnd(1,d-n1);
+      return { question:`피자 한 판의 ${n1}/${d}과 ${n2}/${d}을 먹었습니다. 모두 얼마를 먹었나요?`, answer:`${n1+n2}/${d}`, unit:'분수의 덧셈', type:'short',
+        steps:[{title:'분모 같은 분수',calc:`${n1}/${d} + ${n2}/${d} = ${n1+n2}/${d}`,desc:'분모가 같으면 분자끼리 더합니다.'}], concept:'동분모 분수 덧셈: 분자끼리만 더하기' };
+    } else if (type === 7) {
+      const a=rnd(10,25), b=rnd(2,9), ans=a*b;
+      return { question:`(두 자리)×(한 자리): ${a} × ${b} = ?`, answer:`${ans}`, unit:'(두 자리)×(한 자리)', type:'short',
+        steps:[{title:'일의 자리',calc:`${a%10} × ${b} = ${(a%10)*b}`,desc:''},{title:'십의 자리',calc:`${Math.floor(a/10)} × ${b} = ${Math.floor(a/10)*b}`,desc:''},{title:'결과',calc:`${a} × ${b} = ${ans}`,desc:''}], concept:'자리수별로 곱하여 더하기' };
+    } else if (type === 8) {
+      const s=rnd(2,9);
+      return { question:`한 변이 ${s}cm인 정삼각형의 둘레는 몇 cm인가요?`, answer:`${s*3}`, unit:'도형의 둘레', type:'short',
+        steps:[{title:'정삼각형 둘레',calc:`${s} × 3 = ${s*3}`,desc:'세 변의 길이가 모두 같습니다.'}], concept:'정삼각형 둘레 = 한 변 × 3' };
+    } else if (type === 9) {
+      const h=rnd(1,12), m=rnd(0,59);
+      const ans=h*60+m;
+      return { question:`${h}시간 ${m}분은 몇 분인가요?`, answer:`${ans}`, unit:'시간과 시각', type:'short',
+        steps:[{title:'시간을 분으로',calc:`${h}시간 = ${h} × 60 = ${h*60}분`,desc:''},{title:'더하기',calc:`${h*60} + ${m} = ${ans}분`,desc:''}], concept:'1시간 = 60분' };
+    } else {
+      const a=rnd(1,3), b=rnd(1,3);
+      return { question:`소수 ${a}.${b}는 ${a}.${b}보다 0.1 큰 수는 얼마인가요?`, answer:`${a}.${b+1<=9?b+1:0}`, unit:'소수', type:'short',
+        steps:[{title:'0.1 더하기',calc:`${a}.${b} + 0.1 = ${(parseFloat(`${a}.${b}`)+0.1).toFixed(1)}`,desc:'소수 한 자리에서 0.1씩 커집니다.'}], concept:'소수 0.1 단위 이해' };
+    }
+  },
+
+  // ════════════════════════════════════════
+  // 초4 - 분수, 소수, 도형, 혼합계산
+  // ════════════════════════════════════════
+  e4: () => {
+    const type = rnd(1, 10);
+    if (type === 1) {
+      const a=rnd(10,30), b=rnd(10,30), ans=a*b;
+      return { question:`가로 ${a}cm, 세로 ${b}cm인 직사각형의 넓이는?`, answer:`${ans}`, unit:'직사각형 넓이', type:'short',
+        steps:[{title:'넓이공식',calc:`가로 × 세로 = ${a} × ${b} = ${ans} cm²`,desc:''}], concept:'직사각형 넓이 = 가로 × 세로' };
+    } else if (type === 2) {
+      const n1=rnd(1,4), n2=rnd(1,4), d=rnd(5,10);
+      const [sn,sd]=simplify(n1+n2,d);
+      return { question:`${n1}/${d} + ${n2}/${d} = ?`, answer:sd===1?`${sn}`:`${sn}/${sd}`, unit:'분모가 같은 분수 덧셈', type:'short',
+        steps:[{title:'분자끼리',calc:`${n1}+${n2} = ${n1+n2}`,desc:''},{title:'약분',calc:`${n1+n2}/${d} = ${sd===1?sn:`${sn}/${sd}`}`,desc:gcd(n1+n2,d)>1?`최대공약수 ${gcd(n1+n2,d)}로 약분`:'이미 기약분수'}], concept:'동분모 분수 덧셈 후 약분' };
+    } else if (type === 3) {
+      const a=rnd(10,99), b=rnd(10,30), ans=a*b;
+      return { question:`${a} × ${b} = ?`, answer:`${ans}`, unit:'(두 자리)×(두 자리)', type:'short',
+        steps:[{title:'일의 자리',calc:`${a} × ${b%10} = ${a*(b%10)}`,desc:''},{title:'십의 자리',calc:`${a} × ${Math.floor(b/10)}0 = ${a*Math.floor(b/10)*10}`,desc:''},{title:'합',calc:`${a*(b%10)} + ${a*Math.floor(b/10)*10} = ${ans}`,desc:''}], concept:'(두 자리)×(두 자리) 계산' };
+    } else if (type === 4) {
+      const b=rnd(2,9), q=rnd(10,30), a=b*q;
+      return { question:`${a} ÷ ${b} = ?`, answer:`${q}`, unit:'(두 자리)÷(한 자리)', type:'short',
+        steps:[{title:'나눗셈',calc:`${a} ÷ ${b} = ${q}`,desc:`검산: ${b} × ${q} = ${a}`}], concept:'나눗셈 검산: 나누는 수 × 몫 = 나누어지는 수' };
+    } else if (type === 5) {
+      const s=rnd(3,12);
+      return { question:`한 변이 ${s}cm인 정사각형의 넓이는?`, answer:`${s*s}`, unit:'정사각형 넓이', type:'short',
+        steps:[{title:'넓이',calc:`${s} × ${s} = ${s*s} cm²`,desc:''}], concept:'정사각형 넓이 = 한 변의 길이²' };
+    } else if (type === 6) {
+      const a=rnd(1,5), b=rnd(a+1,9);
+      return { question:`분수 ${a}/${b}를 소수로 나타내면? (나누어 떨어지지 않으면 반올림 없이 그대로)`, answer:`${(a/b).toFixed(2)}`, unit:'분수와 소수 관계', type:'short',
+        steps:[{title:'나눗셈',calc:`${a} ÷ ${b} = ${(a/b).toFixed(2)}`,desc:'분자를 분모로 나눕니다.'}], concept:'분수를 소수로: 분자÷분모' };
+    } else if (type === 7) {
+      const a=rnd(2,9), b=rnd(2,9), c=rnd(2,9);
+      const ans=a*b+c;
+      return { question:`${a} × ${b} + ${c} = ?`, answer:`${ans}`, unit:'혼합계산', type:'short',
+        steps:[{title:'곱셈 먼저',calc:`${a} × ${b} = ${a*b}`,desc:'곱셈을 덧셈보다 먼저 계산합니다.'},{title:'덧셈',calc:`${a*b} + ${c} = ${ans}`,desc:''}], concept:'혼합계산: 곱셈·나눗셈 → 덧셈·뺄셈 순서' };
+    } else if (type === 8) {
+      const l=rnd(3,8), w=rnd(3,8);
+      return { question:`가로 ${l}cm, 세로 ${w}cm 직사각형의 둘레는?`, answer:`${2*(l+w)}`, unit:'직사각형 둘레', type:'short',
+        steps:[{title:'둘레',calc:`(${l} + ${w}) × 2 = ${l+w} × 2 = ${2*(l+w)} cm`,desc:''}], concept:'직사각형 둘레 = (가로+세로) × 2' };
+    } else if (type === 9) {
+      const n=rnd(12,48);
+      const factors=[];
+      for(let i=1;i<=n;i++)if(n%i===0)factors.push(i);
+      return { question:`${n}의 약수의 개수는?`, answer:`${factors.length}`, unit:'약수', type:'short',
+        steps:[{title:'약수 찾기',calc:`${factors.join(', ')}`,desc:`${n}을 나누어 떨어지게 하는 수`},{title:'개수',calc:`${factors.length}개`,desc:''}], concept:'약수: 어떤 수를 나누어 떨어지게 하는 수' };
+    } else {
+      const a=rnd(1,9), b=rnd(1,9);
+      return { question:`소수 ${a}.${b}와 ${b}.${a}의 합은?`, answer:`${(parseFloat(`${a}.${b}`)+parseFloat(`${b}.${a}`)).toFixed(1)}`, unit:'소수의 덧셈', type:'short',
+        steps:[{title:'소수 덧셈',calc:`${a}.${b} + ${b}.${a} = ${(parseFloat(`${a}.${b}`)+parseFloat(`${b}.${a}`)).toFixed(1)}`,desc:'소수점 자리 맞추어 더하기'}], concept:'소수 덧셈: 소수점 자리 맞추기' };
+    }
+  },
+
+  // ════════════════════════════════════════
+  // 초5 - 약수배수, 분수, 비율, 넓이
+  // ════════════════════════════════════════
+  e5: () => {
+    const type = rnd(1, 10);
+    if (type === 1) {
+      const d1=rnd(2,5), d2=rnd(2,5), n1=rnd(1,d1-1||1), n2=rnd(1,d2-1||1);
+      const L=lcm(d1,d2), nn1=n1*(L/d1), nn2=n2*(L/d2);
+      const [sn,sd]=simplify(nn1+nn2,L);
+      return { question:`${n1}/${d1} + ${n2}/${d2} = ?`, answer:sd===1?`${sn}`:`${sn}/${sd}`, unit:'분수의 덧셈(통분)', type:'short',
+        steps:[{title:'통분',calc:`lcm(${d1},${d2})=${L}`,desc:''},{title:'변환',calc:`${n1}/${d1}=${nn1}/${L}, ${n2}/${d2}=${nn2}/${L}`,desc:''},{title:'덧셈',calc:`${nn1}/${L}+${nn2}/${L}=${nn1+nn2}/${L}`,desc:''},{title:'약분',calc:`= ${sd===1?sn:`${sn}/${sd}`}`,desc:''}], concept:'이분모 분수 덧셈: 통분→덧셈→약분' };
+    } else if (type === 2) {
+      const d1=rnd(2,6), d2=rnd(2,6), n1=rnd(2,d1), n2=rnd(1,d2-1||1);
+      const L=lcm(d1,d2), nn1=n1*(L/d1), nn2=n2*(L/d2);
+      const diff=nn1-nn2;
+      const [sn,sd]=diff>0?simplify(diff,L):[0,1];
+      return { question:`${n1}/${d1} - ${n2}/${d2} = ?`, answer:sd===1?`${sn}`:`${sn}/${sd}`, unit:'분수의 뺄셈(통분)', type:'short',
+        steps:[{title:'통분',calc:`lcm(${d1},${d2})=${L}`,desc:''},{title:'변환',calc:`${n1}/${d1}=${nn1}/${L}, ${n2}/${d2}=${nn2}/${L}`,desc:''},{title:'뺄셈',calc:`${nn1}/${L}-${nn2}/${L}=${diff}/${L}`,desc:''},{title:'약분',calc:`= ${sd===1?sn:`${sn}/${sd}`}`,desc:''}], concept:'이분모 분수 뺄셈: 통분→뺄셈→약분' };
+    } else if (type === 3) {
+      const n=rnd(12,48);
+      const factors=[];
+      for(let i=1;i<=n;i++)if(n%i===0)factors.push(i);
+      return { question:`${n}의 약수를 모두 더하면?`, answer:`${factors.reduce((a,b)=>a+b,0)}`, unit:'약수와 배수', type:'short',
+        steps:[{title:'약수',calc:`${factors.join(', ')}`,desc:''},{title:'합',calc:`= ${factors.reduce((a,b)=>a+b,0)}`,desc:''}], concept:'약수: 나누어 떨어지게 하는 수' };
+    } else if (type === 4) {
+      const a=rnd(2,9), b=rnd(2,9);
+      return { question:`${a} ÷ ${b} = ? (소수 둘째 자리까지)`, answer:`${(a/b).toFixed(2)}`, unit:'소수의 나눗셈', type:'short',
+        steps:[{title:'나눗셈',calc:`${a} ÷ ${b} = ${(a/b).toFixed(2)}`,desc:'나머지를 계속 나눕니다.'}], concept:'소수 나눗셈: 나머지에 10 곱해 계속 나누기' };
+    } else if (type === 5) {
+      const r=rnd(2,8);
+      return { question:`반지름이 ${r}cm인 원의 넓이는? (π=3.14)`, answer:`${(r*r*3.14).toFixed(2)}`, unit:'원의 넓이', type:'short',
+        steps:[{title:'원넓이',calc:`π × r² = 3.14 × ${r}² = 3.14 × ${r*r} = ${(r*r*3.14).toFixed(2)} cm²`,desc:''}], concept:'원의 넓이 = π × 반지름²' };
+    } else if (type === 6) {
+      const r=rnd(2,8);
+      return { question:`반지름이 ${r}cm인 원의 둘레는? (π=3.14)`, answer:`${(2*r*3.14).toFixed(2)}`, unit:'원의 둘레', type:'short',
+        steps:[{title:'원둘레',calc:`2 × π × r = 2 × 3.14 × ${r} = ${(2*r*3.14).toFixed(2)} cm`,desc:''}], concept:'원의 둘레 = 2 × π × 반지름' };
+    } else if (type === 7) {
+      const vals=[rnd(60,100),rnd(60,100),rnd(60,100),rnd(60,100)];
+      const sum=vals.reduce((a,b)=>a+b,0);
+      return { question:`4번의 시험 점수가 ${vals.join('점, ')}점일 때 평균은?`, answer:`${Math.round(sum/4)}`, unit:'평균', type:'short',
+        steps:[{title:'합계',calc:`${vals.join('+')} = ${sum}`,desc:''},{title:'평균',calc:`${sum} ÷ 4 = ${Math.round(sum/4)}`,desc:''}], concept:'평균 = 합계 ÷ 개수' };
+    } else if (type === 8) {
+      const p=rnd(2,8), q=rnd(2,8);
+      const pct=Math.round(p/(p+q)*100);
+      return { question:`전체 ${p+q}명 중 여학생이 ${p}명입니다. 여학생의 비율은 몇 %인가요?`, answer:`${pct}`, unit:'비율과 백분율', type:'short',
+        steps:[{title:'비율',calc:`${p} ÷ ${p+q} = ${(p/(p+q)).toFixed(2)}`,desc:''},{title:'백분율',calc:`${(p/(p+q)).toFixed(2)} × 100 = ${pct}%`,desc:''}], concept:'백분율 = (부분÷전체) × 100' };
+    } else if (type === 9) {
+      const a=rnd(2,6), b=rnd(2,6);
+      const [sn,sd]=simplify(a,b);
+      return { question:`비 ${a}:${b}를 가장 간단한 자연수의 비로 나타내면?`, answer:`${sn}:${sd}`, unit:'비와 비율', type:'short',
+        steps:[{title:'최대공약수',calc:`gcd(${a},${b}) = ${gcd(a,b)}`,desc:''},{title:'나누기',calc:`${a}÷${gcd(a,b)}:${b}÷${gcd(a,b)} = ${sn}:${sd}`,desc:''}], concept:'비를 최대공약수로 나누어 간단히' };
+    } else {
+      const l=rnd(3,8), w=rnd(2,6), h=rnd(2,6);
+      return { question:`가로 ${l}m, 세로 ${w}m인 직사각형 밭의 넓이는?`, answer:`${l*w}`, unit:'넓이', type:'short',
+        steps:[{title:'넓이',calc:`${l} × ${w} = ${l*w} m²`,desc:''}], concept:'직사각형 넓이 = 가로 × 세로' };
+    }
+  },
+
+  // ════════════════════════════════════════
+  // 초6 - 분수나눗셈, 비례, 부피, 통계
+  // ════════════════════════════════════════
+  e6: () => {
+    const type = rnd(1, 10);
+    if (type === 1) {
+      const a=rnd(1,5), b=rnd(2,6), c=rnd(1,5), d=rnd(2,6);
+      const [sn,sd]=simplify(a*c,b*d);
+      return { question:`${a}/${b} × ${c}/${d} = ?`, answer:sd===1?`${sn}`:`${sn}/${sd}`, unit:'분수의 곱셈', type:'short',
+        steps:[{title:'분자끼리, 분모끼리',calc:`(${a}×${c})/(${b}×${d}) = ${a*c}/${b*d}`,desc:''},{title:'약분',calc:`= ${sd===1?sn:`${sn}/${sd}`}`,desc:''}], concept:'분수 곱셈: 분자×분자, 분모×분모' };
+    } else if (type === 2) {
+      const a=rnd(2,5), b=rnd(2,5);
+      const [sn,sd]=simplify(a,b);
+      return { question:`${a}/${b} ÷ ${sn}/${sd} = ?`, answer:'1', unit:'분수의 나눗셈', type:'short',
+        steps:[{title:'역수 곱셈',calc:`${a}/${b} × ${sd}/${sn}`,desc:'나누기는 역수를 곱하는 것과 같습니다.'}], concept:'분수 나눗셈: ÷(b/a) = ×(a/b)' };
+    } else if (type === 3) {
+      const a=rnd(2,8), b=rnd(2,8), c=rnd(2,8);
+      return { question:`비례식 ${a} : ${b} = ${a*c} : □에서 □는?`, answer:`${b*c}`, unit:'비례식', type:'short',
+        steps:[{title:'외항의 곱 = 내항의 곱',calc:`${a} × □ = ${b} × ${a*c}`,desc:''},{title:'계산',calc:`□ = ${b*a*c} ÷ ${a} = ${b*c}`,desc:''}], concept:'비례식: 외항의 곱 = 내항의 곱' };
+    } else if (type === 4) {
+      const l=rnd(2,6), w=rnd(2,6), h=rnd(2,6);
+      return { question:`가로 ${l}cm, 세로 ${w}cm, 높이 ${h}cm인 직육면체의 부피는?`, answer:`${l*w*h}`, unit:'직육면체의 부피', type:'short',
+        steps:[{title:'부피',calc:`${l} × ${w} × ${h} = ${l*w*h} cm³`,desc:''}], concept:'직육면체 부피 = 가로 × 세로 × 높이' };
+    } else if (type === 5) {
+      const s=rnd(2,6);
+      return { question:`한 모서리가 ${s}cm인 정육면체의 부피는?`, answer:`${s*s*s}`, unit:'정육면체의 부피', type:'short',
+        steps:[{title:'부피',calc:`${s}³ = ${s} × ${s} × ${s} = ${s*s*s} cm³`,desc:''}], concept:'정육면체 부피 = 한 모서리³' };
+    } else if (type === 6) {
+      const vals=[rnd(5,20),rnd(5,20),rnd(5,20),rnd(5,20),rnd(5,20)];
+      const sorted=[...vals].sort((a,b)=>a-b);
+      return { question:`자료 ${vals.join(', ')}의 중앙값은?`, answer:`${sorted[2]}`, unit:'대표값(중앙값)', type:'short',
+        steps:[{title:'정렬',calc:`${sorted.join(', ')}`,desc:'작은 수부터 순서대로 나열합니다.'},{title:'중앙값',calc:`가운데 값 = ${sorted[2]}`,desc:'홀수 개이면 가운데 값이 중앙값'}], concept:'중앙값: 자료를 순서대로 나열했을 때 가운데 값' };
+    } else if (type === 7) {
+      const total=rnd(20,60), part=rnd(5,total-5);
+      const pct=Math.round(part/total*100);
+      return { question:`전체 ${total}개 중 ${part}개가 불량품입니다. 불량률은 몇 %인가요?`, answer:`${pct}`, unit:'비율과 백분율', type:'short',
+        steps:[{title:'비율',calc:`${part} ÷ ${total} ≈ ${(part/total).toFixed(2)}`,desc:''},{title:'백분율',calc:`≈ ${pct}%`,desc:''}], concept:'백분율 = (부분÷전체) × 100' };
+    } else if (type === 8) {
+      const a=rnd(2,8), b=rnd(2,8), c=rnd(2,8);
+      return { question:`비례식 ${a} : ${b} = ${c} : □에서 □는?`, answer:`${Math.round(b*c/a)}`, unit:'비례배분', type:'short',
+        steps:[{title:'비례식',calc:`${a} × □ = ${b} × ${c}`,desc:''},{title:'□ 계산',calc:`□ = ${b*c} ÷ ${a} = ${Math.round(b*c/a)}`,desc:''}], concept:'비례식 풀기: 외항의 곱 = 내항의 곱' };
+    } else if (type === 9) {
+      const a=rnd(1,5), b=rnd(1,5);
+      return { question:`(${a}/${b}) ÷ 2 = ?`, answer:`${a}/${b*2}`, unit:'분수÷자연수', type:'short',
+        steps:[{title:'나눗셈',calc:`${a}/${b} ÷ 2 = ${a}/${b} × 1/2 = ${a}/${b*2}`,desc:'분모에 자연수를 곱합니다.'}], concept:'분수÷자연수 = 분모에 자연수 곱하기' };
+    } else {
+      const vals=[rnd(5,20),rnd(5,20),rnd(5,20),rnd(5,20)];
+      const sum=vals.reduce((a,b)=>a+b,0);
+      const avg=Math.round(sum/vals.length);
+      return { question:`자료 ${vals.join(', ')}의 평균은?`, answer:`${avg}`, unit:'대표값(평균)', type:'short',
+        steps:[{title:'합계',calc:`${vals.join('+')} = ${sum}`,desc:''},{title:'평균',calc:`${sum} ÷ ${vals.length} = ${avg}`,desc:''}], concept:'평균 = 합계 ÷ 개수' };
+    }
+  },
+
+  // ════════════════════════════════════════
+  // 중1 - 소인수분해, 정수유리수, 방정식, 함수
+  // ════════════════════════════════════════
+  m1: () => {
+    const type = rnd(1, 10);
+    if (type === 1) {
+      // 소인수분해
+      const primes=[2,3,5,7];
+      const idx1=rnd(0,3), idx2=(idx1+1+rnd(0,2))%4;
+      const p1=primes[idx1], p2=primes[idx2];
+      const e1=rnd(1,3), e2=rnd(1,2);
+      const n=Math.pow(p1,e1)*Math.pow(p2,e2);
+      let tmp=n, divHistory=[];
+      for(const p of [2,3,5,7,11,13]){
+        while(tmp%p===0){divHistory.push({num:tmp,div:p,result:tmp/p});tmp=tmp/p;}
+        if(tmp===1)break;
+      }
+      const factorMap={};
+      divHistory.forEach(d=>{factorMap[d.div]=(factorMap[d.div]||0)+1;});
+      const ans=Object.entries(factorMap).sort((a,b)=>Number(a[0])-Number(b[0])).map(([p,e])=>e>1?`${p}^${e}`:p).join(' × ');
+      return { question:`${n}을 소인수분해 하세요.`, answer:ans, unit:'소인수분해', type:'short',
+        steps:[...divHistory.map((d,i)=>({title:`${i+1}단계`,calc:`${d.num} ÷ ${d.div} = ${d.result}`,desc:''})),{title:'결과',calc:`${n} = ${ans}`,desc:''}], concept:'소인수분해: 소수의 곱으로 나타내기' };
+    } else if (type === 2) {
+      const a=rndNZ(-12,12), b=rndNZ(-12,12);
+      return { question:`(${a}) + (${b}) = ?`, answer:`${a+b}`, unit:'정수의 덧셈', type:'short',
+        steps:[{title:'부호 판단',calc:`${a>=0?'양수':'음수'} + ${b>=0?'양수':'음수'}`,desc:'같은 부호: 절댓값 더하고 공통 부호, 다른 부호: 절댓값 차이에 큰 쪽 부호'},{title:'결과',calc:`${a} + ${b} = ${a+b}`,desc:''}], concept:'정수 덧셈: 부호에 따라 계산' };
+    } else if (type === 3) {
+      const a=rndNZ(-9,9), b=rndNZ(-9,9);
+      return { question:`(${a}) × (${b}) = ?`, answer:`${a*b}`, unit:'정수의 곱셈', type:'short',
+        steps:[{title:'부호',calc:`${a>=0?'+':'-'} × ${b>=0?'+':'-'} = ${a*b>=0?'+':'-'}`,desc:'같은 부호 곱 → 양수, 다른 부호 곱 → 음수'},{title:'계산',calc:`|${a}| × |${b}| = ${Math.abs(a*b)}`,desc:''},{title:'결과',calc:`${a*b}`,desc:''}], concept:'정수 곱셈: 부호 결정 후 절댓값 곱하기' };
+    } else if (type === 4) {
+      const a=rndNZ(1,5), b=rnd(-10,10), x=rnd(-5,5), c=a*x+b;
+      return { question:`일차방정식 ${a}x + ${b} = ${c}의 해를 구하세요.`, answer:`${x}`, unit:'일차방정식', type:'short',
+        steps:[{title:'이항',calc:`${a}x = ${c} - (${b}) = ${c-b}`,desc:''},{title:'계수로 나누기',calc:`x = ${c-b} ÷ ${a} = ${x}`,desc:''},{title:'검산',calc:`${a}×${x}+${b} = ${a*x+b} = ${c} ✓`,desc:''}], concept:'ax+b=c → x=(c-b)/a' };
+    } else if (type === 5) {
+      const x=rnd(-5,5), y=rnd(-5,5);
+      const q=x>0&&y>0?1:x<0&&y>0?2:x<0&&y<0?3:x>0&&y<0?4:0;
+      return { question:`점 (${x}, ${y})는 제 몇 사분면 위의 점인가요? (축 위이면 '없음')`, answer:q===0?'없음':`제${q}사분면`, unit:'좌표평면', type:'short',
+        steps:[{title:'x 부호',calc:`x=${x} → ${x>0?'양':x<0?'음':'0'}`,desc:''},{title:'y 부호',calc:`y=${y} → ${y>0?'양':y<0?'음':'0'}`,desc:''},{title:'사분면',calc:q===0?'축 위 → 없음':`(${x>0?'+':'-'}, ${y>0?'+':'-'}) → 제${q}사분면`,desc:''}], concept:'1(+,+) 2(-,+) 3(-,-) 4(+,-)' };
+    } else if (type === 6) {
+      const a=rnd(1,4), b=rnd(-6,6), x=rnd(1,5);
+      return { question:`y = ${a}x + ${b}에서 x = ${x}일 때 y의 값은?`, answer:`${a*x+b}`, unit:'함수값', type:'short',
+        steps:[{title:'대입',calc:`y = ${a}×${x} + ${b} = ${a*x} + ${b} = ${a*x+b}`,desc:''}], concept:'함수에 x값 대입하여 y 계산' };
+    } else if (type === 7) {
+      const a=rnd(2,20), b=rnd(2,20);
+      return { question:`${a}와 ${b}의 최대공약수는?`, answer:`${gcd(a,b)}`, unit:'최대공약수', type:'short',
+        steps:[{title:'유클리드 호제법',calc:`gcd(${a},${b}) = gcd(${b},${a%b}) = ... = ${gcd(a,b)}`,desc:''}], concept:'최대공약수: 두 수의 공약수 중 가장 큰 것' };
+    } else if (type === 8) {
+      const a=rnd(2,10), b=rnd(2,10);
+      return { question:`${a}와 ${b}의 최소공배수는?`, answer:`${lcm(a,b)}`, unit:'최소공배수', type:'short',
+        steps:[{title:'계산',calc:`lcm(${a},${b}) = ${a}×${b}÷gcd(${a},${b}) = ${a*b}÷${gcd(a,b)} = ${lcm(a,b)}`,desc:''}], concept:'최소공배수 = 두 수의 곱 ÷ 최대공약수' };
+    } else if (type === 9) {
+      const a=rndNZ(-9,9), b=rndNZ(-9,9);
+      return { question:`(${a}) - (${b}) = ?`, answer:`${a-b}`, unit:'정수의 뺄셈', type:'short',
+        steps:[{title:'변환',calc:`${a} - (${b}) = ${a} + (${-b}) = ${a-b}`,desc:'빼기는 반대 부호를 더하는 것'}], concept:'정수 뺄셈: 빼는 수의 부호를 바꿔 덧셈' };
+    } else {
+      const a=rndNZ(1,4), b=rnd(-8,8), x1=rnd(-3,3), c=a*x1+b;
+      return { question:`${a}x + ${b} < ${c+a}를 만족하는 가장 큰 정수 x는?`, answer:`${x1}`, unit:'부등식', type:'short',
+        steps:[{title:'이항',calc:`${a}x < ${c+a-b}`,desc:''},{title:'나누기',calc:`x < ${(c+a-b)/a}`,desc:''},{title:'최대 정수',calc:`x = ${x1}`,desc:''}], concept:'일차부등식 풀기' };
+    }
+  },
+
+  // ════════════════════════════════════════
+  // 중2 - 연립방정식, 부등식, 일차함수, 도형
+  // ════════════════════════════════════════
+  m2: () => {
+    const type = rnd(1, 10);
+    if (type === 1) {
+      const x=rnd(-3,3), y=rnd(-3,3);
+      const a1=rndNZ(1,3), b1=rndNZ(1,3), c1=a1*x+b1*y;
+      const a2=rndNZ(1,3), b2=rndNZ(1,3), c2=a2*x+b2*y;
+      return { question:`연립방정식의 해(x+y)를 구하세요.\n${a1}x + ${b1}y = ${c1}\n${a2}x + ${b2}y = ${c2}`, answer:`${x+y}`, unit:'연립방정식', type:'short',
+        steps:[{title:'가감법',calc:`x = ${x}, y = ${y}`,desc:'한 미지수를 소거합니다.'},{title:'x+y',calc:`${x} + ${y} = ${x+y}`,desc:''}], concept:'연립방정식: 가감법 또는 대입법' };
+    } else if (type === 2) {
+      const a=rndNZ(-4,4), b=rnd(-6,6);
+      return { question:`일차함수 y = ${a}x + ${b}의 기울기와 y절편은?`, answer:`기울기: ${a}, y절편: ${b}`, unit:'일차함수', type:'short',
+        steps:[{title:'y = ax + b 형태',calc:`기울기 a = ${a}`,desc:''},{title:'y절편',calc:`b = ${b} → 점 (0, ${b})`,desc:''}], concept:'y=ax+b: a=기울기, b=y절편' };
+    } else if (type === 3) {
+      const triples=[[3,4,5],[5,12,13],[8,15,17],[6,8,10],[9,12,15],[20,21,29]];
+      const [a,b,c]=triples[rnd(0,triples.length-1)];
+      return { question:`직각삼각형에서 두 직각변이 ${a}cm, ${b}cm일 때 빗변은?`, answer:`${c}`, unit:'피타고라스 정리', type:'short',
+        steps:[{title:'피타고라스',calc:`c² = ${a}² + ${b}² = ${a*a} + ${b*b} = ${a*a+b*b}`,desc:''},{title:'결과',calc:`c = √${a*a+b*b} = ${c} cm`,desc:''}], concept:'c² = a² + b² (c: 빗변)' };
+    } else if (type === 4) {
+      const total=rnd(5,10), favor=rnd(1,total-1);
+      return { question:`주머니에 빨간 공 ${favor}개, 파란 공 ${total-favor}개. 1개 꺼낼 때 빨간 공이 나올 확률은?`, answer:`${favor}/${total}`, unit:'확률', type:'short',
+        steps:[{title:'전체',calc:`${total}개`,desc:''},{title:'확률',calc:`P = ${favor}/${total}`,desc:gcd(favor,total)>1?`최대공약수 ${gcd(favor,total)}로 약분`:''}], concept:'확률 = 사건의 경우 / 전체 경우' };
+    } else if (type === 5) {
+      const a=rndNZ(-3,3)||1, b=rnd(-5,5), x=rnd(-4,4);
+      return { question:`일차함수 y = ${a}x + ${b}의 그래프가 점 (${x}, ?)를 지날 때 ?의 값은?`, answer:`${a*x+b}`, unit:'일차함수 그래프', type:'short',
+        steps:[{title:'대입',calc:`y = ${a}×${x} + ${b} = ${a*x+b}`,desc:''}], concept:'일차함수에 x 대입하여 y 계산' };
+    } else if (type === 6) {
+      const a=rndNZ(1,4), b=rnd(-5,5);
+      return { question:`y = ${a}x + ${b}의 x절편은?`, answer:`${-b/a}`, unit:'x절편과 y절편', type:'short',
+        steps:[{title:'y=0 대입',calc:`0 = ${a}x + ${b}`,desc:''},{title:'풀기',calc:`x = ${-b/a}`,desc:''}], concept:'x절편: y=0일 때 x값' };
+    } else if (type === 7) {
+      const r=rnd(3,9);
+      return { question:`반지름이 ${r}cm인 원의 넓이는? (π 사용)`, answer:`${r*r}π`, unit:'원의 넓이', type:'short',
+        steps:[{title:'공식',calc:`S = πr² = π × ${r}² = ${r*r}π cm²`,desc:''}], concept:'원의 넓이 = πr²' };
+    } else if (type === 8) {
+      const a=rndNZ(1,3), b=rnd(-4,4), c=rnd(-4,4);
+      const disc=b*b-4*a*c;
+      if(disc<0)return GENERATORS.m2();
+      return { question:`이차방정식 ${a}x² + ${b}x + ${c} = 0의 두 근의 합은?`, answer:`${-b/a}`, unit:'이차방정식 기초', type:'short',
+        steps:[{title:'비에타 공식',calc:`두 근의 합 = -b/a = ${-b}/${a} = ${-b/a}`,desc:''}], concept:'ax²+bx+c=0의 두 근의 합 = -b/a' };
+    } else if (type === 9) {
+      const l=rnd(3,8), w=rnd(3,8);
+      return { question:`가로 ${l}cm, 세로 ${w}cm 직사각형의 대각선 길이는? (소수 둘째 자리)`, answer:`${Math.sqrt(l*l+w*w).toFixed(2)}`, unit:'피타고라스 응용', type:'short',
+        steps:[{title:'대각선²',calc:`${l}² + ${w}² = ${l*l+w*w}`,desc:''},{title:'대각선',calc:`√${l*l+w*w} ≈ ${Math.sqrt(l*l+w*w).toFixed(2)} cm`,desc:''}], concept:'직사각형 대각선: 피타고라스 정리 활용' };
+    } else {
+      const a=rndNZ(1,3), b=rnd(-6,6), x=rnd(-3,3), c=a*x+b+1;
+      return { question:`${a}x + ${b} < ${c}를 풀면?`, answer:`x < ${(c-b)/a}`, unit:'일차부등식', type:'short',
+        steps:[{title:'이항',calc:`${a}x < ${c-b}`,desc:''},{title:'나누기',calc:`x < ${(c-b)/a}`,desc:a<0?'음수로 나누면 부호 바뀜':''}], concept:'일차부등식: 음수로 나누면 부등호 방향 바뀜' };
+    }
+  },
+
+  // ════════════════════════════════════════
+  // 중3 - 이차방정식, 이차함수, 삼각비, 통계
+  // ════════════════════════════════════════
+  m3: () => {
+    const type = rnd(1, 10);
+    if (type === 1) {
+      const p=rnd(-5,5), q=rnd(-5,5);
+      const b=-(p+q), c=p*q;
+      const bStr=b>0?`+${b}`:b===0?'':b.toString();
+      const cStr=c>0?`+${c}`:c===0?'':c.toString();
+      return { question:`x² ${bStr}x ${cStr} = 0의 두 근의 합은?`, answer:`${p+q}`, unit:'이차방정식(인수분해)', type:'short',
+        steps:[{title:'인수분해',calc:`(x${p>=0?`-${p}`:`+${Math.abs(p)}`})(x${q>=0?`-${q}`:`+${Math.abs(q)}`}) = 0`,desc:''},{title:'두 근',calc:`x = ${p} 또는 x = ${q}`,desc:''},{title:'합',calc:`${p}+${q} = ${p+q}`,desc:''}], concept:'비에타 공식: 두 근의 합 = -b/a' };
+    } else if (type === 2) {
+      const h=rnd(-4,4), k=rnd(-4,4), a=rnd(1,3);
+      return { question:`이차함수 y = ${a>1?a:''}(x - ${h})² + ${k}의 꼭짓점 좌표는?`, answer:`(${h}, ${k})`, unit:'이차함수', type:'short',
+        steps:[{title:'표준형',calc:`y = a(x-p)²+q → 꼭짓점 (p,q)`,desc:''},{title:'결과',calc:`꼭짓점 = (${h}, ${k})`,desc:''}], concept:'y=a(x-p)²+q의 꼭짓점: (p,q)' };
+    } else if (type === 3) {
+      const angles={30:{sin:'1/2',cos:'√3/2',tan:'√3/3'},45:{sin:'√2/2',cos:'√2/2',tan:'1'},60:{sin:'√3/2',cos:'1/2',tan:'√3'}};
+      const deg=[30,45,60][rnd(0,2)];
+      const fn=['sin','cos','tan'][rnd(0,2)];
+      return { question:`${fn} ${deg}° = ?`, answer:angles[deg][fn], unit:'삼각비', type:'short',
+        steps:[{title:'특수각 삼각비',calc:`sin30°=1/2, sin45°=√2/2, sin60°=√3/2`,desc:''},{title:'결과',calc:`${fn}${deg}° = ${angles[deg][fn]}`,desc:''}], concept:'30°, 45°, 60° 삼각비 암기' };
+    } else if (type === 4) {
+      const r=rnd(3,10);
+      return { question:`반지름 ${r}cm인 원의 넓이는? (π 사용)`, answer:`${r*r}π`, unit:'원의 넓이', type:'short',
+        steps:[{title:'공식',calc:`S = πr² = ${r*r}π cm²`,desc:''}], concept:'원의 넓이 = πr²' };
+    } else if (type === 5) {
+      const a=rndNZ(1,3), c=rnd(-8,8);
+      const b=rnd(-6,6);
+      const disc=b*b-4*a*c;
+      if(disc<0||(!Number.isInteger(Math.sqrt(disc))&&disc!==0))return GENERATORS.m3();
+      const sq=Math.sqrt(disc);
+      const x1=(-b+sq)/(2*a), x2=(-b-sq)/(2*a);
+      if(!Number.isInteger(x1)||!Number.isInteger(x2))return GENERATORS.m3();
+      return { question:`${a===1?'':a}x² ${b>=0?`+${b}`:`${b}`}x ${c>=0?`+${c}`:`${c}`} = 0의 두 근은?`, answer:`x=${x1} 또는 x=${x2}`, unit:'이차방정식(근의공식)', type:'short',
+        steps:[{title:'판별식',calc:`D = ${b}²-4×${a}×${c} = ${disc}`,desc:''},{title:'근의 공식',calc:`x = (-${b}±√${disc})/${2*a}`,desc:''},{title:'두 근',calc:`x = ${x1} 또는 x = ${x2}`,desc:''}], concept:'근의 공식: x=(-b±√(b²-4ac))/2a' };
+    } else if (type === 6) {
+      const vals=[rnd(5,20),rnd(5,20),rnd(5,20),rnd(5,20),rnd(5,20)];
+      const sorted=[...vals].sort((a,b)=>a-b);
+      const freq={};
+      vals.forEach(v=>{freq[v]=(freq[v]||0)+1;});
+      const mode=Object.entries(freq).sort((a,b)=>b[1]-a[1])[0][0];
+      return { question:`자료 ${vals.join(', ')}의 최빈값은?`, answer:mode, unit:'대표값(최빈값)', type:'short',
+        steps:[{title:'빈도',calc:Object.entries(freq).map(([v,c])=>`${v}: ${c}번`).join(', '),desc:''},{title:'최빈값',calc:`가장 많이 나온 값 = ${mode}`,desc:''}], concept:'최빈값: 가장 자주 나타나는 값' };
+    } else if (type === 7) {
+      const a=rnd(1,4), h=rnd(-3,3), k=rnd(-4,4);
+      return { question:`이차함수 y = ${a}(x-${h})²+${k}의 축의 방정식은?`, answer:`x = ${h}`, unit:'이차함수의 축', type:'short',
+        steps:[{title:'표준형',calc:`꼭짓점 x좌표 = ${h}`,desc:''},{title:'축',calc:`x = ${h}`,desc:''}], concept:'이차함수 y=a(x-p)²+q의 축: x=p' };
+    } else if (type === 8) {
+      const n=rnd(3,9), r=rnd(1,n-1);
+      return { question:`C(${n},${r}) = ?`, answer:`${comb(n,r)}`, unit:'경우의 수(조합)', type:'short',
+        steps:[{title:'조합 공식',calc:`C(${n},${r}) = ${n}!/(${r}!×${n-r}!)`,desc:''},{title:'계산',calc:`= ${Array.from({length:r},(_,i)=>n-i).join('×')} / ${Array.from({length:r},(_,i)=>i+1).join('×')} = ${comb(n,r)}`,desc:''}], concept:'C(n,r) = n!/(r!(n-r)!)' };
+    } else if (type === 9) {
+      const vals=[rnd(5,20),rnd(5,20),rnd(5,20),rnd(5,20)];
+      const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+      const variance=vals.reduce((s,v)=>s+(v-avg)**2,0)/vals.length;
+      return { question:`자료 ${vals.join(', ')}의 분산은?`, answer:`${variance}`, unit:'분산과 표준편차', type:'short',
+        steps:[{title:'평균',calc:`(${vals.join('+')})/4 = ${avg}`,desc:''},{title:'편차²합',calc:`${vals.map(v=>`(${v}-${avg})²`).join('+')} = ${variance*vals.length}`,desc:''},{title:'분산',calc:`${variance*vals.length}÷4 = ${variance}`,desc:''}], concept:'분산 = (편차²의 합)/n' };
+    } else {
+      const a=rnd(2,6), b=rnd(3,8), c=rnd(50,80);
+      return { question:`직각삼각형에서 빗변이 ${b}cm, 한 각이 ${a*10}°일 때 높이는? (sin${a*10}°≈${(Math.sin(a*10*Math.PI/180)).toFixed(2)})`, answer:`${(b*Math.sin(a*10*Math.PI/180)).toFixed(2)}`, unit:'삼각비 활용', type:'short',
+        steps:[{title:'sin 활용',calc:`높이 = ${b} × sin${a*10}° ≈ ${b} × ${(Math.sin(a*10*Math.PI/180)).toFixed(2)} = ${(b*Math.sin(a*10*Math.PI/180)).toFixed(2)}`,desc:''}], concept:'직각삼각형: 높이 = 빗변 × sinθ' };
+    }
+  },
+
+  // ════════════════════════════════════════
+  // 고1 - 다항식, 방정식부등식, 경우의수
+  // ════════════════════════════════════════
+  h1: () => {
+    const type = rnd(1, 10);
+    if (type === 1) {
+      const a=rnd(1,4), b=rnd(1,4);
+      return { question:`(x + ${a})(x + ${b})를 전개하면?`, answer:`x² + ${a+b}x + ${a*b}`, unit:'다항식 전개', type:'short',
+        steps:[{title:'분배법칙',calc:`x²+(${a}+${b})x+${a}×${b}`,desc:''},{title:'결과',calc:`x² + ${a+b}x + ${a*b}`,desc:''}], concept:'(x+a)(x+b) = x²+(a+b)x+ab' };
+    } else if (type === 2) {
+      const a=rnd(1,5);
+      return { question:`(x + ${a})² = ?`, answer:`x² + ${2*a}x + ${a*a}`, unit:'완전제곱식', type:'short',
+        steps:[{title:'공식',calc:`(x+a)² = x²+2ax+a²`,desc:''},{title:'대입',calc:`x² + ${2*a}x + ${a*a}`,desc:''}], concept:'(x+a)² = x²+2ax+a²' };
+    } else if (type === 3) {
+      const a=rnd(1,5);
+      return { question:`x² - ${a*a} = ?를 인수분해하면?`, answer:`(x+${a})(x-${a})`, unit:'인수분해', type:'short',
+        steps:[{title:'합차공식',calc:`a²-b² = (a+b)(a-b)`,desc:''},{title:'적용',calc:`x²-${a*a} = (x+${a})(x-${a})`,desc:''}], concept:'합차공식: a²-b²=(a+b)(a-b)' };
+    } else if (type === 4) {
+      const base=rnd(2,4), exp2=rnd(2,5);
+      return { question:`log${base}(${Math.pow(base,exp2)}) = ?`, answer:`${exp2}`, unit:'로그', type:'short',
+        steps:[{title:'정의',calc:`log${base}(${Math.pow(base,exp2)}) = x ↔ ${base}ˣ = ${Math.pow(base,exp2)}`,desc:''},{title:'계산',calc:`${base}^${exp2} = ${Math.pow(base,exp2)}이므로 x = ${exp2}`,desc:''}], concept:'log_b(bⁿ) = n' };
+    } else if (type === 5) {
+      const a=rnd(1,10), d=rnd(1,5), n=rnd(5,10);
+      const sn=n*(2*a+(n-1)*d)/2;
+      return { question:`첫째항 ${a}, 공차 ${d}인 등차수열의 첫 ${n}항의 합은?`, answer:`${sn}`, unit:'등차수열', type:'short',
+        steps:[{title:'합공식',calc:`Sₙ = n{2a+(n-1)d}/2`,desc:''},{title:'대입',calc:`S${n} = ${n}(${2*a}+${(n-1)*d})/2 = ${n}×${2*a+(n-1)*d}/2 = ${sn}`,desc:''}], concept:'등차수열 합: Sₙ=n{2a₁+(n-1)d}/2' };
+    } else if (type === 6) {
+      const p=rnd(1,5), q=rnd(p+1,8);
+      return { question:`이차부등식 (x-${p})(x-${q}) < 0의 해는?`, answer:`${p} < x < ${q}`, unit:'이차부등식', type:'short',
+        steps:[{title:'근',calc:`x = ${p} 또는 x = ${q}`,desc:''},{title:'해',calc:`${p} < x < ${q}`,desc:'아래로 볼록 포물선이 x축 아래인 구간'}], concept:'(x-p)(x-q)<0 (p<q): p<x<q' };
+    } else if (type === 7) {
+      const n=rnd(3,7), r=rnd(1,n-1);
+      const perm=Array.from({length:r},(_,i)=>n-i).reduce((a,b)=>a*b,1);
+      return { question:`P(${n},${r}) = ?`, answer:`${perm}`, unit:'순열', type:'short',
+        steps:[{title:'공식',calc:`P(n,r) = n!/(n-r)!`,desc:''},{title:'계산',calc:`${Array.from({length:r},(_,i)=>n-i).join('×')} = ${perm}`,desc:''}], concept:'순열 P(n,r): n개에서 r개 순서있게 선택' };
+    } else if (type === 8) {
+      const n=rnd(4,8), r=rnd(2,n-1);
+      return { question:`C(${n},${r}) = ?`, answer:`${comb(n,r)}`, unit:'조합', type:'short',
+        steps:[{title:'공식',calc:`C(${n},${r}) = P(${n},${r})/${r}! = ${comb(n,r)}`,desc:''}], concept:'조합 C(n,r) = n!/(r!(n-r)!)' };
+    } else if (type === 9) {
+      const a=rnd(1,4), b=rnd(1,4);
+      return { question:`x² + ${a+b}x + ${a*b} = 0을 인수분해로 풀면?`, answer:`x = -${a} 또는 x = -${b}`, unit:'이차방정식', type:'short',
+        steps:[{title:'인수분해',calc:`(x+${a})(x+${b}) = 0`,desc:''},{title:'해',calc:`x = -${a} 또는 x = -${b}`,desc:''}], concept:'인수분해: 각 인수를 0으로 놓아 해를 구함' };
+    } else {
+      const a=rnd(2,5), n=rnd(2,5);
+      const an=a*Math.pow(2,n-1);
+      return { question:`첫째항 ${a}, 공비 2인 등비수열의 제${n}항은?`, answer:`${an}`, unit:'등비수열', type:'short',
+        steps:[{title:'공식',calc:`aₙ = a₁×rⁿ⁻¹ = ${a}×2^${n-1} = ${a}×${Math.pow(2,n-1)} = ${an}`,desc:''}], concept:'등비수열 일반항: aₙ = a₁rⁿ⁻¹' };
+    }
+  },
+
+  // ════════════════════════════════════════
+  // 고2 - 삼각함수, 수열, 미분
+  // ════════════════════════════════════════
+  h2: () => {
+    const type = rnd(1, 10);
+    if (type === 1) {
+      const angles={0:{sin:'0',cos:'1',tan:'0'},30:{sin:'1/2',cos:'√3/2',tan:'√3/3'},45:{sin:'√2/2',cos:'√2/2',tan:'1'},60:{sin:'√3/2',cos:'1/2',tan:'√3'},90:{sin:'1',cos:'0'},180:{sin:'0',cos:'-1',tan:'0'}};
+      const deg=[0,30,45,60,180][rnd(0,4)];
+      const fn=['sin','cos'][rnd(0,1)];
+      return { question:`${fn} ${deg}° = ?`, answer:angles[deg][fn], unit:'삼각함수', type:'short',
+        steps:[{title:'단위원',calc:`${fn}${deg}° = ${angles[deg][fn]}`,desc:'단위원에서의 좌표로 정의'}], concept:'단위원: cosθ=x좌표, sinθ=y좌표' };
+    } else if (type === 2) {
+      const a=rnd(1,5), r=rnd(2,3), n=rnd(3,7);
+      const an=a*Math.pow(r,n-1);
+      return { question:`첫째항 ${a}, 공비 ${r}인 등비수열의 제${n}항은?`, answer:`${an}`, unit:'등비수열', type:'short',
+        steps:[{title:'공식',calc:`a${n} = ${a}×${r}^${n-1} = ${a}×${Math.pow(r,n-1)} = ${an}`,desc:''}], concept:'등비수열: aₙ = a₁rⁿ⁻¹' };
+    } else if (type === 3) {
+      const a=rnd(1,4), b=rnd(1,4), c=rnd(-5,5);
+      return { question:`f(x) = ${a}x³ + ${b}x² + ${c}x일 때 f'(x) = ?`, answer:`${3*a}x² + ${2*b}x + ${c}`, unit:'미분(다항함수)', type:'short',
+        steps:[{title:'미분공식',calc:`(xⁿ)' = nxⁿ⁻¹`,desc:''},{title:'각 항 미분',calc:`(${a}x³)'=${3*a}x², (${b}x²)'=${2*b}x, (${c}x)'=${c}`,desc:''},{title:'결과',calc:`f'(x) = ${3*a}x² + ${2*b}x + ${c}`,desc:''}], concept:'다항함수 미분: (axⁿ)\' = anx^(n-1)' };
+    } else if (type === 4) {
+      const n=rnd(4,10);
+      return { question:`Σ(k=1 to ${n}) k = ?`, answer:`${n*(n+1)/2}`, unit:'수열의 합(Σ)', type:'short',
+        steps:[{title:'공식',calc:`Σk = n(n+1)/2`,desc:''},{title:'계산',calc:`${n}×${n+1}/2 = ${n*(n+1)/2}`,desc:''}], concept:'Σk(1~n) = n(n+1)/2' };
+    } else if (type === 5) {
+      const a=rnd(1,4), b=rnd(1,4);
+      return { question:`f(x) = ${a}x + ${b}일 때 f'(x) = ?`, answer:`${a}`, unit:'미분(일차함수)', type:'short',
+        steps:[{title:'미분',calc:`(${a}x + ${b})' = ${a}`,desc:'상수는 미분하면 0'}], concept:'일차함수 미분: (ax+b)\' = a' };
+    } else if (type === 6) {
+      const a=rnd(2,5), n=rnd(2,5);
+      return { question:`Σ(k=1 to ${n}) ${a} = ?`, answer:`${a*n}`, unit:'상수의 합', type:'short',
+        steps:[{title:'계산',calc:`${a}를 ${n}번 더하면 ${a} × ${n} = ${a*n}`,desc:''}], concept:'Σc(1~n) = cn (c는 상수)' };
+    } else if (type === 7) {
+      const a=rnd(1,5), d=rnd(1,4), n=rnd(3,8);
+      const an=a+(n-1)*d;
+      return { question:`첫째항 ${a}, 공차 ${d}인 등차수열의 제${n}항은?`, answer:`${an}`, unit:'등차수열 일반항', type:'short',
+        steps:[{title:'공식',calc:`aₙ = a₁+(n-1)d`,desc:''},{title:'계산',calc:`a${n} = ${a}+(${n}-1)×${d} = ${a}+${(n-1)*d} = ${an}`,desc:''}], concept:'등차수열 일반항: aₙ=a₁+(n-1)d' };
+    } else if (type === 8) {
+      const a=rnd(1,4), b=rnd(0,4);
+      const x0=rnd(1,3);
+      return { question:`f(x) = ${a}x² + ${b}x에서 f'(${x0}) = ?`, answer:`${2*a*x0+b}`, unit:'미분(이차함수)', type:'short',
+        steps:[{title:'미분',calc:`f'(x) = ${2*a}x + ${b}`,desc:''},{title:'대입',calc:`f'(${x0}) = ${2*a}×${x0}+${b} = ${2*a*x0+b}`,desc:''}], concept:'이차함수 f(x)=ax²+bx의 도함수: f\'(x)=2ax+b' };
+    } else if (type === 9) {
+      const a=rnd(1,3), r=rnd(2,4), n=rnd(3,6);
+      const sn=a*(Math.pow(r,n)-1)/(r-1);
+      return { question:`첫째항 ${a}, 공비 ${r}인 등비수열의 첫 ${n}항의 합은?`, answer:`${sn}`, unit:'등비수열의 합', type:'short',
+        steps:[{title:'공식',calc:`Sₙ = a(rⁿ-1)/(r-1)`,desc:''},{title:'계산',calc:`S${n} = ${a}(${r}^${n}-1)/(${r}-1) = ${a}×${Math.pow(r,n)-1}/${r-1} = ${sn}`,desc:''}], concept:'등비수열 합: Sₙ=a₁(rⁿ-1)/(r-1) (r≠1)' };
+    } else {
+      const a=rnd(1,3), b=rnd(1,4);
+      return { question:`lim(x→${b}) (${a}x + ${b}) = ?`, answer:`${a*b+b}`, unit:'함수의 극한', type:'short',
+        steps:[{title:'직접 대입',calc:`${a}×${b}+${b} = ${a*b+b}`,desc:'연속함수는 직접 대입'}], concept:'연속함수의 극한: lim f(x) = f(a)' };
+    }
+  },
+
+  // ════════════════════════════════════════
+  // 고3 - 적분, 확률통계, 수열
+  // ════════════════════════════════════════
+  h3: () => {
+    const type = rnd(1, 10);
+    if (type === 1) {
+      const a=rnd(1,4), n=rnd(1,3), upper=rnd(1,4);
+      const ans=a*Math.pow(upper,n+1)/(n+1);
+      return { question:`∫₀^${upper} ${a}x^${n} dx = ?`, answer:`${ans%1===0?ans:ans.toFixed(2)}`, unit:'정적분', type:'short',
+        steps:[{title:'부정적분',calc:`∫${a}x^${n}dx = ${a}/${n+1}x^${n+1}+C`,desc:''},{title:'대입',calc:`[${a}/${n+1}×x^${n+1}]₀^${upper} = ${a/(n+1)}×${Math.pow(upper,n+1)} = ${ans}`,desc:''}], concept:'정적분: F(b)-F(a)' };
+    } else if (type === 2) {
+      const n=rnd(5,9), r=rnd(2,4);
+      return { question:`C(${n},${r}) = ?`, answer:`${comb(n,r)}`, unit:'조합', type:'short',
+        steps:[{title:'공식',calc:`C(${n},${r}) = ${n}!/(${r}!×${n-r}!)`,desc:''},{title:'계산',calc:`= ${Array.from({length:r},(_,i)=>n-i).join('×')} / ${Array.from({length:r},(_,i)=>i+1).join('×')} = ${comb(n,r)}`,desc:''}], concept:'C(n,r) = n!/(r!(n-r)!)' };
+    } else if (type === 3) {
+      const p=rnd(1,4), total=10;
+      return { question:`동전 10개 중 앞면 ${p}개. 1개 고를 때 앞면이면 1점, 아니면 0점. 기댓값은?`, answer:`${p}/${total}`, unit:'확률분포(기댓값)', type:'short',
+        steps:[{title:'확률',calc:`P(앞)=${p}/${total}, P(뒤)=${total-p}/${total}`,desc:''},{title:'기댓값',calc:`E = 1×${p}/${total}+0×${total-p}/${total} = ${p}/${total}`,desc:''}], concept:'기댓값 E(X) = Σ xᵢP(xᵢ)' };
+    } else if (type === 4) {
+      const a=rnd(1,3), upper=rnd(2,4);
+      const ans=a*upper*upper/2;
+      return { question:`∫₀^${upper} ${a}x dx = ?`, answer:`${ans}`, unit:'정적분(일차)', type:'short',
+        steps:[{title:'부정적분',calc:`∫${a}x dx = ${a}/2 x²+C`,desc:''},{title:'정적분',calc:`[${a}/2 x²]₀^${upper} = ${a/2}×${upper*upper} = ${ans}`,desc:''}], concept:'∫ax dx = a/2·x²+C' };
+    } else if (type === 5) {
+      const mu=rnd(60,80), sigma=rnd(5,15), x=mu+sigma;
+      return { question:`정규분포 N(${mu},${sigma}²)에서 P(X≤${x})는? (P(Z≤1)=0.8413 이용)`, answer:'0.8413', unit:'정규분포', type:'short',
+        steps:[{title:'표준화',calc:`Z = (${x}-${mu})/${sigma} = 1`,desc:''},{title:'확률',calc:`P(X≤${x}) = P(Z≤1) = 0.8413`,desc:''}], concept:'표준화: Z=(X-μ)/σ' };
+    } else if (type === 6) {
+      const n=rnd(3,7), r=rnd(1,n);
+      const perm=Array.from({length:r},(_,i)=>n-i).reduce((a,b)=>a*b,1);
+      return { question:`P(${n},${r}) = ?`, answer:`${perm}`, unit:'순열', type:'short',
+        steps:[{title:'계산',calc:`${Array.from({length:r},(_,i)=>n-i).join('×')} = ${perm}`,desc:''}], concept:'P(n,r) = n×(n-1)×···×(n-r+1)' };
+    } else if (type === 7) {
+      const a=rnd(1,4), b=rnd(1,4), upper=rnd(1,3);
+      const ans=a*upper+b*upper*upper/2;
+      return { question:`∫₀^${upper} (${a} + ${b}x) dx = ?`, answer:`${ans}`, unit:'정적분(합)', type:'short',
+        steps:[{title:'부정적분',calc:`∫(${a}+${b}x)dx = ${a}x+${b}/2 x²+C`,desc:''},{title:'정적분',calc:`[${a}x+${b/2}x²]₀^${upper} = ${a*upper}+${b/2*upper*upper} = ${ans}`,desc:''}], concept:'적분의 선형성: ∫(f+g)=∫f+∫g' };
+    } else if (type === 8) {
+      const n=rnd(4,8);
+      return { question:`Σ(k=1 to ${n}) k² = ?`, answer:`${n*(n+1)*(2*n+1)/6}`, unit:'수열의 합(Σk²)', type:'short',
+        steps:[{title:'공식',calc:`Σk² = n(n+1)(2n+1)/6`,desc:''},{title:'계산',calc:`${n}×${n+1}×${2*n+1}/6 = ${n*(n+1)*(2*n+1)/6}`,desc:''}], concept:'Σk²(1~n) = n(n+1)(2n+1)/6' };
+    } else if (type === 9) {
+      const p=rnd(1,4)/10, n=rnd(3,6), k=rnd(0,n);
+      const prob=(comb(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k)).toFixed(4);
+      return { question:`이항분포 B(${n},${p})에서 P(X=${k}) = ? (소수 넷째 자리)`, answer:prob, unit:'이항분포', type:'short',
+        steps:[{title:'공식',calc:`P(X=${k}) = C(${n},${k})×${p}^${k}×${1-p}^${n-k}`,desc:''},{title:'계산',calc:`= ${comb(n,k)}×${Math.pow(p,k).toFixed(4)}×${Math.pow(1-p,n-k).toFixed(4)} ≈ ${prob}`,desc:''}], concept:'이항분포: P(X=k)=C(n,k)pᵏ(1-p)ⁿ⁻ᵏ' };
+    } else {
+      const a=rnd(1,4), b=rnd(0,4), upper=rnd(1,3), lower=0;
+      const ans=a*Math.pow(upper,2)/2+b*upper;
+      return { question:`∫₀^${upper} (${a}x + ${b}) dx = ?`, answer:`${ans}`, unit:'정적분 응용', type:'short',
+        steps:[{title:'부정적분',calc:`F(x) = ${a/2}x²+${b}x`,desc:''},{title:'정적분',calc:`F(${upper})-F(0) = ${ans}`,desc:''}], concept:'정적분 = F(b) - F(a)' };
+    }
+  },
+};
+
+// ── 보기 생성 ──────────────────────────────────────────────────
+function makeOptions(ans, wrongGen, n=3){
+  const s=new Set([String(ans)]);
+  const ws=[];
+  for(let i=0;i<60&&ws.length<n;i++){
+    const w=String(wrongGen(i));
+    if(!s.has(w)){s.add(w);ws.push(w);}
+  }
+  return ws.slice(0,n);
+}
+
+// ── 학년 그리드 ───────────────────────────────────────────────
+const grid=document.getElementById('grade-grid');
+GRADES.forEach(g=>{
+  const btn=document.createElement('button');
+  btn.className='grade-btn';btn.dataset.id=g.id;btn.textContent=g.label;
+  btn.onclick=()=>{selected.has(g.id)?selected.delete(g.id):selected.add(g.id);btn.classList.toggle('selected',selected.has(g.id));updateCount();};
+  grid.appendChild(btn);
+});
+
+function updateCount(){const n=selected.size;document.getElementById('sel-count').textContent=n?`${n}개 선택됨`:'';document.getElementById('start-btn').disabled=n===0;}
+function selectRange(r){selected=new Set(RANGE[r]);document.querySelectorAll('.grade-btn').forEach(b=>b.classList.toggle('selected',selected.has(b.dataset.id)));updateCount();}
+function updateStats(){document.getElementById('score-val').textContent=score;document.getElementById('streak-val').textContent=streak;document.getElementById('total-val').textContent=total;document.getElementById('rate-val').textContent=total>0?Math.round(correct/total*100)+'%':'—';}
+
+// ── 인증 ──────────────────────────────────────────────────────────
+async function initAuth(){
+  const params=new URLSearchParams(location.search);
+  const token=params.get('token');
+  if(token){authToken=token;localStorage.setItem('auth_token',token);history.replaceState({},'',location.pathname);}
+  if(params.get('error'))showToast('로그인 실패');
+  if(authToken){
+    await fetchMe();
+  }else{
+    updateStats();
+  }
+  renderAuthArea();
+}
+
+async function fetchMe(){
+  if(!authToken)return;
+  try{
+    const res=await fetch(`${API}/api/me`,{headers:{Authorization:`Bearer ${authToken}`}});
+    const data=await res.json();
+
+    // 밴 체크
+    if(data.banned){
+      document.getElementById('ban-overlay').style.display='flex';
+      document.getElementById('ban-overlay-reason').textContent=`사유: ${data.reason}`;
+      return;
+    }
+
+    currentUser=data.user||null;
+    if(currentUser){
+      // DB에서 가져온 누적 통계 반영
+      score=currentUser.totalScore||0;
+      correct=currentUser.totalCorrect||0;
+      total=currentUser.totalAnswered||0;
+      streak=currentUser.bestStreak||0;
+      updateStats();
+      renderAuthArea();
+      checkAdminTab();
+      updateWrongBadge();
+    }
+  }catch(e){currentUser=null;}
+}
+
+
+
+function renderAuthArea(){
+  const area=document.getElementById('auth-area');
+  if(!area)return;
+  if(currentUser){
+    const initial=currentUser.name?currentUser.name[0]:'?';
+    area.innerHTML=`<div class="user-chip" title="${currentUser.name}">
+      ${currentUser.avatar?`<img src="${currentUser.avatar}" alt="">`:`<div style="width:24px;height:24px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;">${initial}</div>`}
+      <span>${currentUser.name}</span>
+    </div>`;
+  }else{
+    area.innerHTML=`<button class="login-btn" onclick="location.href='${API}/functions/api/auth/google'">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      구글 로그인
+    </button>`;
+  }
+}
+
+async function saveResult(grade,score,correct,total,maxStreak){
+  if(!authToken||!currentUser)return;
+  try{
+    await fetch(`${API}/api/result`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`},
+      body:JSON.stringify({grade,score,correct,total,maxStreak}),
+    });
+  }catch(e){}
+}
+
+
+// ── 탭 ──────────────────────────────────────────────────────────
+function showTab(name){
+  ['quiz','ranking','profile','wrong','stats','admin'].forEach(t=>{
+    const el=document.getElementById('tab-'+t);
+    if(el)el.style.display='none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('tab-'+name);
+  if(el)el.style.display='block';
+  const idx={quiz:0,ranking:1,profile:2,wrong:3,stats:4,admin:5}[name];
+  const btns=document.querySelectorAll('.tab-btn');
+  if(btns[idx])btns[idx].classList.add('active');
+  if(name==='ranking')loadRanking();
+  if(name==='profile')renderProfile();
+  if(name==='admin')loadAdminPanel();
+  if(name==='wrong')loadWrongNotes();
+  if(name==='stats')loadUnitStats();
+  document.querySelector('.stats-banner').style.display=name==='quiz'?'flex':'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── 랭킹 ─────────────────────────────────────────────────────────
+async function loadRanking(){
+  const list=document.getElementById('ranking-list');
+  list.innerHTML='<div class="empty-ranking">불러오는 중…</div>';
+  try{
+    const res=await fetch(`${API}/api/ranking`,{headers:{Authorization:`Bearer ${authToken||''}`}});
+    const data=await res.json();
+    if(!data.ranking||data.ranking.length===0){
+      list.innerHTML='<div class="empty-ranking">아직 기록이 없어요!<br>첫 번째 랭커가 되어보세요 🏆</div>';
+      return;
+    }
+    list.innerHTML='';
+    data.ranking.forEach((u,i)=>{
+      const numClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      const isMe=currentUser&&u.name===currentUser.name;
+      const initial=u.name?u.name[0]:'?';
+      const acc=u.total_answered>0?Math.round(u.total_correct/u.total_answered*100):0;
+      list.innerHTML+=`<div class="rank-card${isMe?' me':''}">
+        <span class="rank-num ${numClass}">${i+1}</span>
+        ${u.avatar?`<img class="rank-avatar" src="${u.avatar}">`:`<div class="rank-avatar-placeholder">${initial}</div>`}
+        <div class="rank-info">
+          <div class="rank-name">${u.name}${isMe?' (나)':''}</div>
+          <div class="rank-stats">정답률 ${acc}% · 최고연속 ${u.best_streak}🔥</div>
+        </div>
+        <span class="rank-score">${u.total_score.toLocaleString()}</span>
+      </div>`;
+    });
+  }catch(e){list.innerHTML='<div class="empty-ranking">랭킹을 불러오지 못했어요.</div>';}
+}
+
+// ── 프로필 ────────────────────────────────────────────────────────
+function renderProfile(){
+  const wrap=document.getElementById('profile-content');
+  if(!currentUser){
+    wrap.innerHTML=`<div class="login-prompt">
+      <div class="login-prompt-icon">👤</div>
+      <div class="login-prompt-title">로그인이 필요해요</div>
+      <div class="login-prompt-desc">구글 로그인을 하면<br>점수와 기록이 저장돼요!</div>
+      <button class="login-btn" onclick="location.href='${API}/api/auth/google'" style="margin:0 auto;">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        구글로 로그인
+      </button>
+    </div>`;
+    return;
+  }
+  const acc=currentUser.totalAnswered>0?Math.round(currentUser.totalCorrect/currentUser.totalAnswered*100):0;
+  const initial=currentUser.name?currentUser.name[0]:'?';
+  const recs=[...(currentUser.records||[])].slice(0,10);
+  let recordsHtml='';
+  recs.forEach(r=>{
+    const d=new Date(r.created_at);
+    const dateStr=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    recordsHtml+=`<div class="record-item">
+      <div><div class="record-grade">${r.grade||'—'}</div><div class="record-date">${dateStr}</div></div>
+      <div style="text-align:right"><div class="record-score">${r.score}점</div><div class="record-acc">${r.accuracy}% 정확도</div></div>
+    </div>`;
+  });
+  wrap.innerHTML=`
+    <div class="profile-card">
+      ${currentUser.avatar?`<img class="profile-avatar" src="${currentUser.avatar}">`:`<div class="profile-avatar-placeholder">${initial}</div>`}
+      <div class="profile-name">${currentUser.name}</div>
+      <div class="profile-email">${currentUser.email||''}</div>
+      <div class="profile-stats">
+        <div class="profile-stat"><div class="profile-stat-val">${currentUser.totalScore.toLocaleString()}</div><div class="profile-stat-label">누적 점수</div></div>
+        <div class="profile-stat"><div class="profile-stat-val">${acc}%</div><div class="profile-stat-label">정답률</div></div>
+        <div class="profile-stat"><div class="profile-stat-val">${currentUser.bestStreak}🔥</div><div class="profile-stat-label">최고 연속</div></div>
+      </div>
+    </div>
+    ${recs.length>0?`<div class="records-title">최근 기록</div>${recordsHtml}`:''}
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <button class="share-btn" onclick="shareScore()" style="flex:1;justify-content:center;">📤 점수 공유하기</button>
+    </div>
+    <button class="logout-btn" onclick="logout()">로그아웃</button>
+  `;
+}
+
+
+// ── 관리자 ────────────────────────────────────────────────────────
+const ADMIN_EMAIL = 'kmimseo1203@gmail.com';
+
+function isAdmin(){return currentUser&&currentUser.email===ADMIN_EMAIL;}
+
+function checkAdminTab(){
+  const btn=document.getElementById('admin-tab-btn');
+  if(btn)btn.style.display=isAdmin()?'block':'none';
+}
+
+async function loadAdminPanel(){
+  if(!isAdmin()){document.getElementById('admin-user-list').innerHTML='<div class="empty-ranking">권한 없음</div>';return;}
+  const list=document.getElementById('admin-user-list');
+  list.innerHTML='<div class="empty-ranking">불러오는 중…</div>';
+  try{
+    const res=await fetch(`${API}/api/admin/users`,{headers:{Authorization:`Bearer ${authToken}`}});
+    const data=await res.json();
+    if(!data.users||data.users.length===0){list.innerHTML='<div class="empty-ranking">유저 없음</div>';return;}
+    list.innerHTML='';
+    // 밴 목록 먼저 표시
+    try{
+      const banRes = await fetch(`${API}/api/admin/ban`, {headers:{Authorization:`Bearer ${authToken}`}});
+      const banData = await banRes.json();
+      if(banData.bans && banData.bans.length > 0){
+        let banHtml = '<div class="ban-list-section"><div class="ban-list-title">🚫 밴 목록</div>';
+        banData.bans.forEach(b=>{
+          const expiry = b.ban_type === 'temp' ? ` (${b.expires_at}까지)` : ' (영구)';
+          banHtml += `<div class="ban-item">
+            <div class="ban-item-info">
+              <div class="ban-item-name">${b.name||'알 수 없음'}${expiry}</div>
+              <div class="ban-item-detail">사유: ${b.reason}</div>
+            </div>
+            <button class="unban-btn" onclick="unban(${b.id})">해제</button>
+          </div>`;
+        });
+        banHtml += '</div>';
+        list.innerHTML = banHtml;
+      }
+    }catch(e){}
+    data.users.forEach(u=>{
+      const acc=u.total_answered>0?Math.round(u.total_correct/u.total_answered*100):0;
+      const initial=u.name?u.name[0]:'?';
+      const recs=(u.records||[]).slice(0,5).map(r=>`
+        <div class="admin-record-row">
+          <span>${r.grade}</span>
+          <span>${r.score}점</span>
+          <span>${r.accuracy}%</span>
+          <span>${new Date(r.created_at).toLocaleDateString('ko-KR')}</span>
+        </div>`).join('');
+      list.innerHTML+=`<div class="admin-card">
+        <div class="admin-user-header">
+          ${u.avatar?`<img class="admin-user-avatar" src="${u.avatar}" onerror="this.style.display='none'">`:`<div class="admin-user-placeholder">${initial}</div>`}
+          <div><div class="admin-user-name">${u.name}</div><div class="admin-user-email">${u.email||''}</div></div>
+        </div>
+        <div class="admin-stats">
+          <div class="admin-stat"><div class="admin-stat-val">${(u.total_score||0).toLocaleString()}</div><div class="admin-stat-label">점수</div></div>
+          <div class="admin-stat"><div class="admin-stat-val">${u.total_answered||0}</div><div class="admin-stat-label">문제수</div></div>
+          <div class="admin-stat"><div class="admin-stat-val">${acc}%</div><div class="admin-stat-label">정답률</div></div>
+          <div class="admin-stat"><div class="admin-stat-val">${u.best_streak||0}🔥</div><div class="admin-stat-label">최고연속</div></div>
+        </div>
+        ${recs?`<div class="admin-records"><div class="admin-records-title">최근 기록</div>${recs}</div>`:''}
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:8px;">
+          <button class="ban-btn" onclick="openBanModal(${u.id}, '${u.name}')">🚫 밴</button>
+        </div>
+      </div>`;
+    });
+  }catch(e){list.innerHTML='<div class="empty-ranking">불러오지 못했어요.</div>';}
+}
+
+
+// ── 밴 관리 ──────────────────────────────────────────────────────
+let banTargetId = null;
+
+function openBanModal(userId, userName){
+  banTargetId = userId;
+  document.getElementById('ban-target-name').textContent = userName;
+  document.getElementById('ban-reason').value = '';
+  document.getElementById('ban-type').value = 'permanent';
+  document.getElementById('ban-duration').style.display = 'none';
+  document.getElementById('ban-modal').style.display = 'flex';
+}
+
+function closeBanModal(){
+  document.getElementById('ban-modal').style.display = 'none';
+  banTargetId = null;
+}
+
+function toggleDuration(){
+  const type = document.getElementById('ban-type').value;
+  document.getElementById('ban-duration').style.display = type === 'temp' ? 'block' : 'none';
+}
+
+async function submitBan(){
+  if(!banTargetId) return;
+  const reason = document.getElementById('ban-reason').value.trim();
+  const ban_type = document.getElementById('ban-type').value;
+  const duration_hours = ban_type === 'temp' ? parseInt(document.getElementById('ban-duration').value) : null;
+  if(!reason){showToast('사유를 입력하세요');return;}
+  if(ban_type === 'temp' && (!duration_hours || duration_hours < 1)){showToast('시간을 입력하세요');return;}
+
+  try{
+    const res = await fetch(`${API}/api/admin/ban`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${authToken}`},
+      body: JSON.stringify({ user_id: banTargetId, reason, ban_type, duration_hours }),
+    });
+    const data = await res.json();
+    if(data.ok){
+      showToast('밴 완료!');
+      closeBanModal();
+      loadAdminPanel();
+    }
+  }catch(e){showToast('오류 발생');}
+}
+
+async function unban(banId){
+  try{
+    const res = await fetch(`${API}/api/admin/ban`, {
+      method: 'DELETE',
+      headers: {'Content-Type':'application/json', 'Authorization': `Bearer ${authToken}`},
+      body: JSON.stringify({ id: banId }),
+    });
+    const data = await res.json();
+    if(data.ok){showToast('밴 해제!');loadAdminPanel();}
+  }catch(e){showToast('오류 발생');}
+}
+
+
+
+// ── 단원별 집중 학습 ──────────────────────────────────────────────
+const ALL_UNITS = {
+  'e1': [['한 자리 수 덧셈','초1'],['한 자리 수 뺄셈','초1'],['덧셈과 뺄셈의 관계','초1'],['받아올림이 있는 덧셈','초1'],['세 수의 덧셈','초1']],
+  'e2': [['두 자리 수 덧셈','초2'],['두 자리 수 뺄셈','초2'],['곱셈의 의미','초2'],['곱셈구구(2~5단)','초2'],['곱셈구구(6~9단)','초2'],['세 자리 수 덧셈','초2']],
+  'e3': [['(두 자리)×(한 자리)','초3'],['나눗셈','초3'],['나머지가 있는 나눗셈','초3'],['분수와 소수','초3'],['분수의 덧셈','초3'],['도형의 둘레','초3'],['시간과 시각','초3']],
+  'e4': [['직사각형 넓이','초4'],['분모가 같은 분수 덧셈','초4'],['(두 자리)×(두 자리)','초4'],['(두 자리)÷(한 자리)','초4'],['정사각형 넓이','초4'],['혼합계산','초4'],['직사각형 둘레','초4'],['약수','초4'],['소수의 덧셈','초4']],
+  'e5': [['분수의 덧셈(통분)','초5'],['분수의 뺄셈(통분)','초5'],['약수와 배수','초5'],['소수의 나눗셈','초5'],['원의 넓이','초5'],['원의 둘레','초5'],['평균','초5'],['비율과 백분율','초5'],['비와 비율','초5']],
+  'e6': [['분수의 곱셈','초6'],['분수의 나눗셈','초6'],['비례식','초6'],['직육면체의 부피','초6'],['정육면체의 부피','초6'],['대표값(중앙값)','초6'],['대표값(평균)','초6'],['분수÷자연수','초6']],
+  'm1': [['소인수분해','중1'],['정수의 덧셈','중1'],['정수의 곱셈','중1'],['정수의 뺄셈','중1'],['일차방정식','중1'],['좌표평면','중1'],['함수값','중1'],['최대공약수','중1'],['최소공배수','중1'],['부등식','중1']],
+  'm2': [['연립방정식','중2'],['일차함수','중2'],['x절편과 y절편','중2'],['일차함수 그래프','중2'],['피타고라스 정리','중2'],['피타고라스 응용','중2'],['확률','중2'],['원의 넓이','중2'],['이차방정식 기초','중2'],['일차부등식','중2']],
+  'm3': [['이차방정식(인수분해)','중3'],['이차방정식(근의공식)','중3'],['이차함수','중3'],['이차함수의 축','중3'],['삼각비','중3'],['삼각비 활용','중3'],['대표값(최빈값)','중3'],['분산과 표준편차','중3'],['경우의 수(조합)','중3']],
+  'h1': [['다항식 전개','고1'],['완전제곱식','고1'],['인수분해','고1'],['로그','고1'],['등차수열','고1'],['등비수열','고1'],['이차부등식','고1'],['순열','고1'],['조합','고1'],['이차방정식','고1']],
+  'h2': [['삼각함수','고2'],['등비수열','고2'],['등비수열의 합','고2'],['미분(다항함수)','고2'],['미분(일차함수)','고2'],['미분(이차함수)','고2'],['수열의 합(Σ)','고2'],['등차수열 일반항','고2'],['함수의 극한','고2'],['상수의 합','고2']],
+  'h3': [['정적분','고3'],['정적분(일차)','고3'],['정적분(합)','고3'],['정적분 응용','고3'],['조합','고3'],['순열','고3'],['확률분포(기댓값)','고3'],['정규분포','고3'],['이항분포','고3'],['수열의 합(Σk²)','고3']],
+};
+
+let selectedUnits = new Set();
+let unitStudyOpen = false;
+let unitStatsCache = {};
+
+function toggleUnitStudy(){
+  unitStudyOpen = !unitStudyOpen;
+  document.getElementById('unit-study-section').style.display = unitStudyOpen ? 'block' : 'none';
+  document.getElementById('unit-toggle-btn').textContent = unitStudyOpen ? '접기' : '펼치기';
+  if(unitStudyOpen) renderUnitStudyGrid();
+}
+
+async function renderUnitStudyGrid(){
+  const grid = document.getElementById('unit-study-grid');
+  grid.innerHTML = '';
+  // 단원별 정답률 불러오기
+  if(currentUser && Object.keys(unitStatsCache).length === 0){
+    try{
+      const res = await fetch(`${API}/api/unit_stats`,{headers:{Authorization:`Bearer ${authToken}`}});
+      const data = await res.json();
+      (data.stats||[]).forEach(s=>{ unitStatsCache[s.unit] = s; });
+    }catch(e){}
+  }
+  const gradeNames = {e1:'초1',e2:'초2',e3:'초3',e4:'초4',e5:'초5',e6:'초6',m1:'중1',m2:'중2',m3:'중3',h1:'고1',h2:'고2',h3:'고3'};
+  Object.entries(ALL_UNITS).forEach(([gid, units])=>{
+    // 학년 라벨
+    const label = document.createElement('div');
+    label.className = 'section-label';
+    label.style.marginTop = '8px';
+    label.textContent = gradeNames[gid];
+    grid.appendChild(label);
+    // 칩 행
+    const row = document.createElement('div');
+    row.className = 'quick-row';
+    units.forEach(([unit])=>{
+      const stat = unitStatsCache[unit];
+      const acc = stat ? Math.round(stat.correct/stat.total*100) : null;
+      const accColor = acc===null?'':acc>=80?'var(--green)':acc>=50?'var(--yellow)':'var(--red)';
+      const btn = document.createElement('button');
+      btn.className = 'chip' + (selectedUnits.has(unit)?' selected':'');
+      btn.style.cssText = selectedUnits.has(unit)?'border-color:var(--blue);color:var(--blue);background:var(--blue-light);':'';
+      btn.innerHTML = unit + (acc!==null?` <span style="font-size:10px;color:${accColor};font-weight:800;">${acc}%</span>`:'');
+      btn.onclick = () => {
+        if(selectedUnits.has(unit)){
+          selectedUnits.delete(unit);
+          btn.style.cssText='';
+        }else{
+          selectedUnits.add(unit);
+          btn.style.cssText='border-color:var(--blue);color:var(--blue);background:var(--blue-light);';
+        }
+      };
+      row.appendChild(btn);
+    });
+    grid.appendChild(row);
+  });
+}
+
+function clearUnitStudy(){
+  selectedUnits.clear();
+  document.querySelectorAll('.unit-study-btn').forEach(b=>b.classList.remove('selected'));
+}
+
+// ── 난이도 & 타이머 설정 ─────────────────────────────────────────
+let difficulty = 'normal';
+let timerSeconds = 0;
+let timerInterval = null;
+let timeLeft = 0;
+
+function selectDiff(d){
+  difficulty = d;
+  document.querySelectorAll('[data-diff]').forEach(b=>{
+    b.classList.toggle('selected', b.dataset.diff === d);
+  });
+}
+
+function selectTimer(t){
+  timerSeconds = t;
+  document.querySelectorAll('[data-timer]').forEach(b=>{
+    b.classList.toggle('selected', parseInt(b.dataset.timer) === t);
+  });
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  if(!timerSeconds){
+    document.getElementById('timer-bar').style.display='none';
+    document.getElementById('timer-text').style.display='none';
+    return;
+  }
+  timeLeft = timerSeconds;
+  document.getElementById('timer-bar').style.display='block';
+  document.getElementById('timer-text').style.display='block';
+  updateTimerUI();
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    updateTimerUI();
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      // 시간 초과 처리
+      document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+      document.getElementById('ans-input').disabled=true;
+      document.getElementById('confirm-btn').disabled=true;
+      total++;
+      streak=0;
+      document.getElementById('question-card').className='question-card wrong';
+      const fb=document.getElementById('feedback');
+      fb.className='feedback wrong show';
+      fb.innerHTML=`<div class="feedback-top">⏰ 시간 초과!</div><div class="feedback-answer">정답: ${curAnswer}</div>`;
+      updateStats();
+      document.getElementById('next-btn').style.display='block';
+      // 오답 저장
+      if(currentUser&&curFeedback)saveWrongNote(curFeedback);
+    }
+  },1000);
+}
+
+function updateTimerUI(){
+  const pct=timeLeft/timerSeconds*100;
+  const fill=document.getElementById('timer-fill');
+  const text=document.getElementById('timer-text');
+  fill.style.width=pct+'%';
+  fill.style.background=pct>50?'var(--green)':pct>25?'var(--yellow)':'var(--red)';
+  text.textContent=`⏱ ${timeLeft}초`;
+  text.className='timer-text'+(pct<=50?' warn':'')+(pct<=25?' danger':'');
+}
+
+function stopTimer(){clearInterval(timerInterval);}
+
+// ── 오답 노트 ────────────────────────────────────────────────────
+async function saveWrongNote(q){
+  if(!authToken||!currentUser)return;
+  try{
+    await fetch(`${API}/api/wrong_notes`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`},
+      body:JSON.stringify({
+        grade:q.unit,unit:q.unit,
+        question:q.question,answer:q.answer,
+        steps:q.steps,concept:q.concept
+      }),
+    });
+    // 배지 업데이트
+    updateWrongBadge();
+  }catch(e){}
+}
+
+async function updateWrongBadge(){
+  if(!authToken)return;
+  try{
+    const res=await fetch(`${API}/api/wrong_notes`,{headers:{Authorization:`Bearer ${authToken}`}});
+    const data=await res.json();
+    const badge=document.getElementById('wrong-badge');
+    const count=data.notes?.length||0;
+    badge.textContent=count;
+    badge.style.display=count>0?'inline':'none';
+  }catch(e){}
+}
+
+async function loadWrongNotes(){
+  if(!currentUser){
+    document.getElementById('wrong-list').innerHTML='<div class="empty-ranking">로그인이 필요해요</div>';
+    return;
+  }
+  const list=document.getElementById('wrong-list');
+  list.innerHTML='<div class="empty-ranking">불러오는 중…</div>';
+  try{
+    const res=await fetch(`${API}/api/wrong_notes`,{headers:{Authorization:`Bearer ${authToken}`}});
+    const data=await res.json();
+    if(!data.notes||data.notes.length===0){
+      list.innerHTML='<div class="empty-ranking">오답이 없어요! 👍</div>';
+      return;
+    }
+    list.innerHTML='';
+    data.notes.forEach(n=>{
+      let steps=[];
+      try{steps=JSON.parse(n.steps)||[];}catch(e){}
+      const stepsHtml=steps.map((s,i)=>`<div class="step"><span class="step-num">${i+1}</span><div class="step-body">${s.title?`<div class="step-title">${s.title}</div>`:''}<div class="step-calc">${s.calc||''}</div></div></div>`).join('');
+      list.innerHTML+=`<div class="wrong-note-card" id="note-${n.id}">
+        <div class="wrong-note-header">
+          <span class="wrong-note-grade">${n.grade||'—'}</span>
+          <span class="wrong-note-unit">${n.unit||''}</span>
+        </div>
+        <div class="wrong-note-q">${n.question}</div>
+        <div class="wrong-note-ans">정답: <strong>${n.answer}</strong></div>
+        ${stepsHtml?`<div class="steps" style="margin-bottom:10px">${stepsHtml}</div>`:''}
+        ${n.concept?`<div class="concept-box"><div class="concept-label">핵심 개념</div><div class="concept-text">${n.concept}</div></div>`:''}
+        <div class="wrong-note-btns" style="margin-top:10px">
+          <button class="solve-btn" onclick="solveNote(${n.id})">✅ 이해했어요</button>
+          <button class="del-note-btn" onclick="deleteNote(${n.id})">🗑</button>
+        </div>
+      </div>`;
+    });
+  }catch(e){list.innerHTML='<div class="empty-ranking">불러오지 못했어요.</div>';}
+}
+
+async function solveNote(id){
+  try{
+    await fetch(`${API}/api/wrong_notes`,{method:'PUT',headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`},body:JSON.stringify({id})});
+    document.getElementById(`note-${id}`).remove();
+    updateWrongBadge();
+    showToast('✅ 오답 노트에서 제거됐어요!');
+  }catch(e){}
+}
+
+async function deleteNote(id){
+  try{
+    await fetch(`${API}/api/wrong_notes`,{method:'DELETE',headers:{'Content-Type':'application/json','Authorization':`Bearer ${authToken}`},body:JSON.stringify({id})});
+    document.getElementById(`note-${id}`).remove();
+    updateWrongBadge();
+  }catch(e){}
+}
+
+// ── 단원별 통계 ──────────────────────────────────────────────────
+async function loadUnitStats(){
+  if(!currentUser){
+    document.getElementById('stats-list').innerHTML='<div class="empty-ranking">로그인이 필요해요</div>';
+    return;
+  }
+  const list=document.getElementById('stats-list');
+  list.innerHTML='<div class="empty-ranking">불러오는 중…</div>';
+  try{
+    const res=await fetch(`${API}/api/unit_stats`,{headers:{Authorization:`Bearer ${authToken}`}});
+    const data=await res.json();
+    if(!data.stats||data.stats.length===0){
+      list.innerHTML='<div class="empty-ranking">아직 기록이 없어요</div>';
+      return;
+    }
+    // 정답률 낮은 순 (취약 단원)
+    const sorted=[...data.stats].sort((a,b)=>a.accuracy-b.accuracy);
+    list.innerHTML='<div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:12px;">⚠️ 취약 단원 순</div>';
+    sorted.forEach(s=>{
+      const acc=s.accuracy||0;
+      const color=acc>=80?'var(--green)':acc>=50?'var(--yellow)':'var(--red)';
+      list.innerHTML+=`<div class="unit-stat-row">
+        <div class="unit-stat-top">
+          <span class="unit-stat-name">${s.unit}</span>
+          <span class="unit-stat-acc" style="color:${color}">${acc}%</span>
+        </div>
+        <div class="unit-stat-bar"><div class="unit-stat-fill" style="width:${acc}%;background:${color}"></div></div>
+        <div class="unit-stat-count">${s.correct}/${s.total}문제 정답</div>
+      </div>`;
+    });
+  }catch(e){list.innerHTML='<div class="empty-ranking">불러오지 못했어요.</div>';}
+}
+
+// ── 점수 공유 ────────────────────────────────────────────────────
+function shareScore(){
+  const text=`수학 퀴즈에서 ${score}점을 획득했어요! 🎉\n정답률 ${total>0?Math.round(correct/total*100):0}% · ${total}문제 풀이\nhttps://mathert.pages.dev`;
+  if(navigator.share){
+    navigator.share({title:'수학 퀴즈 결과',text});
+  }else{
+    navigator.clipboard.writeText(text).then(()=>showToast('📋 클립보드에 복사됐어요!'));
+  }
+}
+
+function logout(){
+  authToken=null;currentUser=null;
+  localStorage.removeItem('auth_token');
+  score=0;streak=0;total=0;correct=0;
+  updateStats();
+  renderAuthArea();
+  showTab('quiz');
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function startQuiz(){document.getElementById('setup-screen').style.display='none';document.getElementById('quiz-screen').style.display='block';document.getElementById('nav-back').style.visibility='visible';loadQuestion();}
+function goSetup(){document.getElementById('setup-screen').style.display='block';document.getElementById('quiz-screen').style.display='none';document.getElementById('nav-back').style.visibility='hidden';}
+
+function loadQuestion(){
+  qNum++;
+  document.getElementById('question-card').className='question-card';
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('next-btn').style.display='none';
+  document.getElementById('options-list').innerHTML='';
+  document.getElementById('input-row').style.display='none';
+  document.getElementById('sym-pad').classList.remove('show');
+  const ai=document.getElementById('ans-input');
+  ai.value='';ai.className='ans-input';ai.disabled=false;
+  document.getElementById('confirm-btn').disabled=false;
+  document.getElementById('q-num').textContent=qNum;
+  document.getElementById('question-text').textContent='';
+
+  const arr=[...selected];
+  const gid=arr[rnd(0,arr.length-1)];
+  const g=GRADES.find(x=>x.id===gid);
+  let q=GENERATORS[gid]();
+  // 단원 필터: 선택된 단원이 있으면 해당 단원 문제가 나올 때까지 재시도 (최대 10회)
+  if(selectedUnits.size>0){
+    let tries=0;
+    while(!selectedUnits.has(q.unit)&&tries<20){
+      const gid2=arr[rnd(0,arr.length-1)];
+      q=GENERATORS[gid2]();
+      tries++;
+    }
+  }
+
+  document.getElementById('q-grade').textContent=g.label;
+  document.getElementById('q-unit').textContent=q.unit;
+  startTimer();
+  document.getElementById('question-text').textContent=q.question;
+  curFeedback=q;
+  curAnswer=String(q.answer).trim();
+
+  // 답이 숫자면 4지선다, 아니면 단답형
+  const isNumeric=!isNaN(parseFloat(q.answer))&&String(q.answer).match(/^-?\d+(\.\d+)?$/);
+  curType=isNumeric?'mcq':'short';
+
+  if(curType==='mcq'){
+    const ansNum=parseFloat(q.answer);
+    const wrongs=makeOptions(q.answer,i=>{
+      const deltas=[1,2,3,5,10,-1,-2,-3,-5,-10,0.5,-0.5,2.5,-2.5];
+      return String(Math.round((ansNum+deltas[i%deltas.length])*100)/100);
+    });
+    const opts=shuffle([q.answer,...wrongs]);
+    const correctIdx=opts.indexOf(q.answer);
+    const list=document.getElementById('options-list');
+    opts.forEach((opt,i)=>{
+      const btn=document.createElement('button');
+      btn.className='opt-btn';
+      btn.innerHTML=`<span class="num">${i+1}</span><span>${opt}</span>`;
+      btn.onclick=()=>pickOpt(i,correctIdx,btn,opts);
+      list.appendChild(btn);
+    });
+  } else {
+    document.getElementById('input-row').style.display='flex';
+    document.getElementById('sym-pad').classList.add('show');
+    const ai=document.getElementById('ans-input');
+    ai.focus();
+    ai.onkeydown=e=>{if(e.key==='Enter')submitAnswer();};
+  }
+}
+
+function pickOpt(idx,correctIdx,btn,opts){
+  document.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const ok=idx===correctIdx;total++;
+  btn.className='opt-btn '+(ok?'sel-correct':'sel-wrong');
+  if(!ok)document.querySelectorAll('.opt-btn')[correctIdx].className='opt-btn show-correct';
+  resolve(ok,opts[correctIdx]);
+}
+
+
+function insSymbol(s){
+  const ai=document.getElementById('ans-input');
+  const start=ai.selectionStart,end=ai.selectionEnd;
+  ai.value=ai.value.slice(0,start)+s+ai.value.slice(end);
+  ai.selectionStart=ai.selectionEnd=start+s.length;
+  ai.focus();
+}
+function delSymbol(){
+  const ai=document.getElementById('ans-input');
+  const start=ai.selectionStart;
+  if(start>0){ai.value=ai.value.slice(0,start-1)+ai.value.slice(start);ai.selectionStart=ai.selectionEnd=start-1;}
+  ai.focus();
+}
+function submitAnswer(){
+  const ai=document.getElementById('ans-input');
+  const val=ai.value.trim();if(!val)return;
+  ai.disabled=true;document.getElementById('confirm-btn').disabled=true;total++;
+  // 정답 비교: 표기 방식 통일 후 비교
+  function normalizeAns(s){
+    return s.trim()
+      .replace(/\s+/g,'')           // 공백 제거
+      .replace(/×/g,'*')            // × → *
+      .replace(/²/g,'^2')           // ² → ^2
+      .replace(/³/g,'^3')           // ³ → ^3
+      .replace(/⁴/g,'^4')           // ⁴ → ^4
+      .toLowerCase();
+  }
+  const ok=normalizeAns(val)===normalizeAns(curAnswer)||(!isNaN(parseFloat(val))&&Math.abs(parseFloat(val)-parseFloat(curAnswer))<0.01);
+  ai.className='ans-input '+(ok?'correct':'wrong');
+  resolve(ok,curAnswer);
+}
+
+function resolve(ok,correctText){
+  if(ok){correct++;streak++;score+=Math.max(10,10*streak);if(streak>=3)showToast(`🔥 ${streak}연속 정답!`);}
+  else{streak=0;}
+  document.getElementById('question-card').className='question-card '+(ok?'correct':'wrong');
+
+  const fb=document.getElementById('feedback');
+  fb.className='feedback '+(ok?'correct':'wrong')+' show';
+
+  const q=curFeedback;
+  const stepsHtml=(q.steps||[]).map((s,i)=>`
+    <div class="step">
+      <span class="step-num">${i+1}</span>
+      <div class="step-body">
+        ${s.title?`<div class="step-title">${s.title}</div>`:''}
+        ${s.calc?`<div class="step-calc">${s.calc}</div>`:''}
+        ${s.desc?`<div class="step-desc">${s.desc}</div>`:''}
+      </div>
+    </div>`).join('');
+
+  fb.innerHTML=`
+    <div class="feedback-top">${ok?'✅ 정답이에요!':'❌ 틀렸어요'}</div>
+    ${!ok?`<div class="feedback-answer">정답: ${correctText}</div>`:''}
+    ${stepsHtml?`<div class="steps">${stepsHtml}</div>`:''}
+    ${q.concept?`<div class="concept-box"><div class="concept-label">핵심 개념</div><div class="concept-text">${q.concept}</div></div>`:''}
+  `;
+
+  updateStats();
+  document.getElementById('next-btn').style.display='block';
+  stopTimer();
+  // 이번 문제 점수만 저장
+  const thisScore=ok?Math.max(10,10*streak):0;
+  const thisCorrect=ok?1:0;
+  if(currentUser&&curFeedback){
+    saveResult(curFeedback.unit,thisScore,thisCorrect,1,streak);
+    if(!ok)saveWrongNote(curFeedback);
+  }
+}
+
+initAuth();
+</script>
+</body>
+</html>.cta-btn:disabled{background:var(--border);color:var(--text-tertiary);box-shadow:none;cursor:not-allowed;}
+.quiz-wrap{padding:20px 20px 0;}
+.quiz-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.grade-pill{background:var(--blue-light);color:var(--blue);border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;}
+.unit-text{font-size:12px;color:var(--text-tertiary);font-weight:500;}
+.question-card{background:var(--white);border-radius:var(--radius-xl);padding:28px 24px 24px;box-shadow:var(--shadow-md);margin-bottom:16px;border:2px solid transparent;transition:border-color 0.3s,box-shadow 0.3s;}
+.question-card.correct{border-color:var(--green);box-shadow:0 4px 20px rgba(0,196,113,0.15);}
+.question-card.wrong{border-color:var(--red);box-shadow:0 4px 20px rgba(240,68,82,0.12);}
+.question-num{font-size:12px;font-weight:700;color:var(--text-tertiary);margin-bottom:14px;}
+.question-text{font-size:16px;font-weight:600;color:var(--text-primary);line-height:1.75;min-height:80px;letter-spacing:-0.2px;white-space:pre-wrap;}
+.options-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.opt-btn{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;font-family:inherit;font-size:15px;font-weight:600;color:var(--text-primary);cursor:pointer;text-align:left;display:flex;align-items:flex-start;gap:14px;transition:all 0.15s;box-shadow:var(--shadow-sm);letter-spacing:-0.2px;line-height:1.55;}
+.opt-btn:hover:not(:disabled){border-color:var(--blue);background:var(--blue-light);color:var(--blue);transform:translateY(-1px);}
+.opt-btn .num{width:26px;height:26px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;transition:all 0.15s;margin-top:1px;}
+.opt-btn:hover:not(:disabled) .num{background:var(--blue);color:#fff;}
+.opt-btn.sel-correct{border-color:var(--green);background:var(--green-light);color:#007a47;}
+.opt-btn.sel-correct .num{background:var(--green);color:#fff;}
+.opt-btn.sel-wrong{border-color:var(--red);background:var(--red-light);color:var(--red);}
+.opt-btn.sel-wrong .num{background:var(--red);color:#fff;}
+.opt-btn.show-correct{border-color:var(--green);background:var(--green-light);color:#007a47;}
+.opt-btn.show-correct .num{background:var(--green);color:#fff;}
+.opt-btn:disabled{cursor:not-allowed;}
+.input-row{display:flex;gap:10px;margin-bottom:16px;}
+.ans-input{flex:1;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;font-family:inherit;font-size:16px;font-weight:700;color:var(--text-primary);outline:none;transition:border-color 0.2s,box-shadow 0.2s;box-shadow:var(--shadow-sm);}
+.ans-input::placeholder{color:var(--text-tertiary);font-weight:500;}
+.ans-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(49,130,246,0.12);}
+.ans-input.correct{border-color:var(--green);color:#007a47;}
+.ans-input.wrong{border-color:var(--red);color:var(--red);}
+.confirm-btn{background:var(--blue);border:none;border-radius:var(--radius-md);padding:16px 22px;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.confirm-btn:hover:not(:disabled){background:var(--blue-dark);}
+.confirm-btn:disabled{background:var(--border);color:var(--text-tertiary);cursor:not-allowed;}
+.sym-pad{display:none;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.sym-pad.show{display:flex;}
+.sym-btn{background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:inherit;font-size:14px;font-weight:700;color:var(--text-primary);cursor:pointer;transition:all 0.15s;min-width:44px;text-align:center;}
+.sym-btn:hover{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
+.sym-btn.del{color:var(--red);border-color:var(--border);}
+.sym-btn.del:hover{border-color:var(--red);background:var(--red-light);}
+
+.feedback{border-radius:var(--radius-md);padding:18px 20px;margin-bottom:16px;display:none;font-size:14px;line-height:1.7;color:var(--text-secondary);}
+.feedback.show{display:block;}
+.feedback.correct{background:var(--green-light);}
+.feedback.wrong{background:var(--red-light);}
+.feedback-top{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;margin-bottom:12px;}
+.feedback.correct .feedback-top{color:#007a47;}
+.feedback.wrong .feedback-top{color:var(--red);}
+.feedback-answer{font-size:13px;font-weight:600;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);color:var(--text-primary);}
+.steps{display:flex;flex-direction:column;gap:10px;margin-bottom:10px;}
+.step{display:flex;gap:12px;align-items:flex-start;}
+.step-num{min-width:24px;height:24px;border-radius:7px;background:rgba(0,0,0,0.07);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--text-secondary);flex-shrink:0;margin-top:1px;}
+.step-body{flex:1;}
+.step-title{font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:2px;}
+.step-calc{font-size:14px;font-weight:700;color:var(--text-primary);font-family:monospace;background:rgba(0,0,0,0.04);padding:4px 8px;border-radius:6px;display:inline-block;margin-bottom:2px;}
+.step-desc{font-size:12px;color:var(--text-tertiary);line-height:1.5;}
+.concept-box{margin-top:12px;padding:10px 14px;background:rgba(49,130,246,0.07);border-radius:10px;border-left:3px solid var(--blue);}
+.concept-box .concept-label{font-size:10px;font-weight:700;color:var(--blue);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;}
+.concept-box .concept-text{font-size:13px;color:var(--text-secondary);}
+.action-row{display:flex;gap:10px;padding:0 20px;margin-top:4px;}
+.action-next{flex:1;background:var(--blue);border:none;border-radius:var(--radius-md);padding:18px;color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s;display:none;box-shadow:0 4px 14px rgba(49,130,246,0.25);}
+.action-next:hover{background:var(--blue-dark);transform:translateY(-1px);}
+.action-back{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:18px;color:var(--text-secondary);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.action-back:hover{border-color:var(--blue);color:var(--blue);}
+.toast{position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--text-primary);color:#fff;border-radius:999px;padding:10px 22px;font-size:14px;font-weight:700;opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:200;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:480px){.grade-grid{grid-template-columns:repeat(3,1fr);}}
+
+.tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:56px;z-index:99;}
+.tab-btn{flex:1;padding:14px;font-family:inherit;font-size:14px;font-weight:600;color:var(--text-tertiary);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
+.ranking-wrap{padding:20px;}
+.ranking-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.ranking-title{font-size:16px;font-weight:700;}
+.refresh-btn{background:none;border:1.5px solid var(--border);border-radius:999px;padding:6px 14px;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-secondary);cursor:pointer;transition:all 0.15s;}
+.refresh-btn:hover{border-color:var(--blue);color:var(--blue);}
+.rank-card{background:var(--white);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-sm);border:1.5px solid var(--border);}
+.rank-card.me{border-color:var(--blue);background:var(--blue-light);}
+.rank-num{font-size:18px;font-weight:800;width:28px;text-align:center;flex-shrink:0;}
+.rank-num.gold{color:#f5a623;}.rank-num.silver{color:#9b9b9b;}.rank-num.bronze{color:#c87533;}
+.rank-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.rank-avatar-placeholder{width:36px;height:36px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;}
+.rank-info{flex:1;min-width:0;}
+.rank-name{font-size:14px;font-weight:700;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rank-stats{font-size:12px;color:var(--text-tertiary);}
+.rank-score{font-size:18px;font-weight:800;color:var(--blue);}
+.empty-ranking{text-align:center;padding:48px 20px;color:var(--text-tertiary);font-size:14px;}
+.profile-wrap{padding:20px;}
+.profile-card{background:var(--white);border-radius:var(--radius-xl);padding:28px 24px;box-shadow:var(--shadow-md);margin-bottom:16px;text-align:center;}
+.profile-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;margin:0 auto 12px;}
+.profile-avatar-placeholder{width:72px;height:72px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;margin:0 auto 12px;}
+.profile-name{font-size:20px;font-weight:800;margin-bottom:4px;}
+.profile-email{font-size:13px;color:var(--text-tertiary);margin-bottom:20px;}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.profile-stat{background:var(--bg);border-radius:var(--radius-sm);padding:14px 8px;text-align:center;}
+.profile-stat-val{font-size:22px;font-weight:800;color:var(--blue);margin-bottom:4px;}
+.profile-stat-label{font-size:11px;color:var(--text-tertiary);font-weight:500;}
+.records-title{font-size:14px;font-weight:700;margin-bottom:12px;}
+.record-item{background:var(--white);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+.record-grade{font-size:13px;font-weight:700;color:var(--blue);margin-bottom:2px;}
+.record-date{font-size:11px;color:var(--text-tertiary);}
+.record-score{font-size:16px;font-weight:800;}
+.record-acc{font-size:11px;color:var(--text-tertiary);}
+
+.admin-wrap{padding:20px;}
+.admin-title{font-size:16px;font-weight:700;margin-bottom:16px;}
+.admin-card{background:var(--white);border-radius:var(--radius-md);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);border:1.5px solid var(--border);}
+.admin-user-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.admin-user-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.admin-user-placeholder{width:36px;height:36px;border-radius:50%;background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;}
+.admin-user-name{font-size:14px;font-weight:700;}
+.admin-user-email{font-size:12px;color:var(--text-tertiary);}
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.admin-stat{background:var(--bg);border-radius:8px;padding:8px;text-align:center;}
+.admin-stat-val{font-size:14px;font-weight:800;color:var(--blue);}
+.admin-stat-label{font-size:10px;color:var(--text-tertiary);}
+.admin-records{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.admin-records-title{font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:6px;}
+.admin-record-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);}
+
+
+.ban-overlay{position:fixed;inset:0;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:40px;text-align:center;}
+.ban-overlay-icon{font-size:64px;margin-bottom:20px;}
+.ban-overlay-title{font-size:24px;font-weight:800;color:var(--red);margin-bottom:12px;}
+.ban-overlay-reason{font-size:15px;color:var(--text-secondary);margin-bottom:8px;line-height:1.6;}
+.ban-overlay-exp{font-size:13px;color:var(--text-tertiary);}
+.ban-btn{background:var(--red-light);border:1.5px solid var(--red);border-radius:8px;padding:6px 12px;font-family:inherit;font-size:12px;font-weight:700;color:var(--red);cursor:pointer;transition:all 0.15s;}
+.ban-btn:hover{background:var(--red);color:#fff;}
+.unban-btn{background:var(--green-light);border:1.5px solid var(--green);border-radius:8px;padding:6px 12px;font-family:inherit;font-size:12px;font-weight:700;color:var(--green);cursor:pointer;transition:all 0.15s;}
+.unban-btn:hover{background:var(--green);color:#fff;}
+.ban-modal{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;}
+.ban-modal-box{background:var(--white);border-radius:var(--radius-xl);padding:28px 24px;width:100%;max-width:400px;}
+.ban-modal-title{font-size:16px;font-weight:700;margin-bottom:16px;}
+.ban-input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-family:inherit;font-size:14px;color:var(--text-primary);outline:none;margin-bottom:10px;}
+.ban-input:focus{border-color:var(--blue);}
+.ban-select{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-family:inherit;font-size:14px;color:var(--text-primary);outline:none;margin-bottom:10px;}
+.ban-modal-btns{display:flex;gap:8px;margin-top:16px;}
+.ban-list-section{margin-top:20px;}
+.ban-list-title{font-size:14px;font-weight:700;margin-bottom:10px;}
+.ban-item{background:var(--red-light);border:1.5px solid var(--red);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.ban-item-info{font-size:13px;}
+.ban-item-name{font-weight:700;color:var(--red);}
+.ban-item-detail{font-size:11px;color:var(--text-tertiary);}
+.logout-btn{width:100%;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:16px;color:var(--red);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-top:8px;}
+.logout-btn:hover{border-color:var(--red);background:var(--red-light);}
+.login-prompt{text-align:center;padding:48px 24px;}
+.login-prompt-icon{font-size:48px;margin-bottom:16px;}
+.login-prompt-title{font-size:18px;font-weight:800;margin-bottom:8px;}
+.login-prompt-desc{font-size:14px;color:var(--text-secondary);margin-bottom:24px;line-height:1.6;}
+.login-btn{background:var(--white);border:1.5px solid var(--border);border-radius:999px;padding:6px 14px;font-family:inherit;font-size:13px;font-weight:600;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s;}
+.login-btn:hover{border-color:var(--blue);color:var(--blue);}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--border);border-radius:999px;padding:5px 12px 5px 6px;cursor:pointer;}
+.user-chip img{width:24px;height:24px;border-radius:50%;}
+.user-chip span{font-size:13px;font-weight:600;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="nav">
+    <button class="nav-back" id="nav-back" onclick="goSetup()" style="visibility:hidden">←</button>
+    <span class="nav-title">수학 퀴즈</span>
+    <div id="auth-area"></div>
+  </nav>
+  <div class="stats-banner">
+    <div class="stat-item"><div class="stat-label">점수</div><div class="stat-value blue" id="score-val">0</div></div>
+    <div class="stat-item"><div class="stat-label">🔥 연속</div><div class="stat-value orange" id="streak-val">0</div></div>
+    <div class="stat-item"><div class="stat-label">정답률</div><div class="stat-value green" id="rate-val">—</div></div>
+    <div class="stat-item"><div class="stat-label">문제 수</div><div class="stat-value" id="total-val">0</div></div>
+  </div>
+  <div class="tabs" id="main-tabs">
+    <button class="tab-btn active" onclick="showTab('quiz')">퀴즈</button>
+    <button class="tab-btn" onclick="showTab('ranking')">🏆 랭킹</button>
+    <button class="tab-btn" onclick="showTab('profile')">내 기록</button>
+    <button class="tab-btn" onclick="showTab('wrong')">📝 오답<span class="tab-badge" id="wrong-badge" style="display:none">0</span></button>
+    <button class="tab-btn" onclick="showTab('stats')">📊 통계</button>
+    <button class="tab-btn" id="admin-tab-btn" style="display:none" onclick="showTab('admin')">🔧 관리</button>
+  </div>
+
+  <div id="tab-quiz">
+  <div id="setup-screen">
+    <div class="section">
+      <div class="section-label">난이도</div>
+      <div class="grade-grid" style="margin-bottom:16px;">
+        <button class="grade-btn easy" data-diff="easy" onclick="selectDiff('easy')">😊 쉬움</button>
+        <button class="grade-btn selected" data-diff="normal" onclick="selectDiff('normal')">📚 보통</button>
+        <button class="grade-btn hard" data-diff="hard" onclick="selectDiff('hard')">🔥 어려움</button>
+      </div>
+      <div class="section-label">타이머</div>
+      <div class="grade-grid" style="margin-bottom:20px;">
+        <button class="grade-btn selected" data-timer="0" onclick="selectTimer(0)">∞ 무제한</button>
+        <button class="grade-btn" data-timer="60" onclick="selectTimer(60)">⏱ 60초</button>
+        <button class="grade-btn" data-timer="30" onclick="selectTimer(30)">⚡ 30초</button>
+      </div>
+      <div class="section-label" style="display:flex;align-items:center;justify-content:space-between;">
+        단원별 집중 학습
+        <button class="chip" id="unit-toggle-btn" onclick="toggleUnitStudy()">펼치기</button>
+      </div>
+      <div id="unit-study-section" style="display:none;margin-bottom:16px;">
+        <div id="unit-study-grid"></div>
+        <button class="chip" onclick="clearUnitStudy()" style="margin-top:4px;">✕ 단원 선택 해제</button>
+      </div>
+      <div class="section-label">빠른 선택</div>
+      <div class="quick-row">
+        <button class="chip" onclick="selectRange('elem')">초등 전체</button>
+        <button class="chip" onclick="selectRange('mid')">중학교 전체</button>
+        <button class="chip" onclick="selectRange('high')">고등학교 전체</button>
+        <button class="chip" onclick="selectRange('all')">전체</button>
+        <button class="chip" onclick="selectRange('none')">초기화</button>
+      </div>
+      <div class="section-label">학년 선택 <span id="sel-count" style="color:var(--blue);font-weight:800"></span></div>
+      <div class="grade-grid" id="grade-grid"></div>
+    </div>
+    <div class="cta-section">
+      <button class="cta-btn" id="start-btn" onclick="startQuiz()" disabled>문제 시작하기</button>
+    </div>
+  </div>
+  <div id="quiz-screen" style="display:none">
+    <div class="quiz-wrap">
+      <div class="timer-text" id="timer-text" style="display:none"></div>
+      <div class="timer-bar" id="timer-bar" style="display:none">
+        <div class="timer-fill" id="timer-fill"></div>
+      </div>
+      <div class="quiz-header">
+        <span class="grade-pill" id="q-grade">—</span>
+        <span class="unit-text" id="q-unit"></span>
+      </div>
+      <div class="question-card" id="question-card">
+        <div class="question-num">Q <span id="q-num">1</span></div>
+        <div class="question-text" id="question-text"></div>
+      </div>
+      <div class="options-list" id="options-list"></div>
+      <div class="sym-pad" id="sym-pad">
+        <button class="sym-btn" onclick="insSymbol('√')">√</button>
+        <button class="sym-btn" onclick="insSymbol('π')">π</button>
+        <button class="sym-btn" onclick="insSymbol('/')">／</button>
+        <button class="sym-btn" onclick="insSymbol('²')">x²</button>
+        <button class="sym-btn" onclick="insSymbol('³')">x³</button>
+        <button class="sym-btn" onclick="insSymbol('≤')">≤</button>
+        <button class="sym-btn" onclick="insSymbol('≥')">≥</button>
+        <button class="sym-btn" onclick="insSymbol('∞')">∞</button>
+        <button class="sym-btn" onclick="insSymbol('-')">−</button>
+        <button class="sym-btn del" onclick="delSymbol()">⌫</button>
+      </div>
+      <div class="input-row" id="input-row" style="display:none">
+        <input class="ans-input" id="ans-input" type="text" placeholder="답을 입력하세요"/>
+        <button class="confirm-btn" id="confirm-btn" onclick="submitAnswer()">확인</button>
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div class="action-row">
+      <button class="action-back" onclick="goSetup()">학년 변경</button>
+      <button class="action-next" id="next-btn" onclick="loadQuestion()">다음 문제</button>
+    </div>
+  </div>
+</div>
+  </div><!-- tab-quiz -->
+
+  <!-- 랭킹 탭 -->
+  <div id="tab-ranking" style="display:none">
+    <div class="ranking-wrap">
+      <div class="ranking-header">
+        <span class="ranking-title">🏆 전체 랭킹</span>
+        <button class="refresh-btn" onclick="loadRanking()">새로고침</button>
+      </div>
+      <div id="ranking-list"><div class="empty-ranking">불러오는 중…</div></div>
+    </div>
+  </div>
+
+  <!-- 오답 노트 탭 -->
+  <div id="tab-wrong" style="display:none">
+    <div class="ranking-wrap">
+      <div class="ranking-header">
+        <span class="ranking-title">📝 오답 노트</span>
+        <button class="refresh-btn" onclick="loadWrongNotes()">새로고침</button>
+      </div>
+      <div id="wrong-list"><div class="empty-ranking">불러오는 중…</div></div>
+    </div>
+  </div>
+
+  <!-- 통계 탭 -->
+  <div id="tab-stats" style="display:none">
+    <div class="ranking-wrap">
+      <div class="ranking-header">
+        <span class="ranking-title">📊 단원별 통계</span>
+        <button class="refresh-btn" onclick="loadUnitStats()">새로고침</button>
+      </div>
+      <div id="stats-list"><div class="empty-ranking">불러오는 중…</div></div>
+    </div>
+  </div>
+
+  <!-- 관리자 탭 -->
+  <div id="tab-admin" style="display:none">
+    <div class="admin-wrap">
+      <div class="admin-title">🔧 관리자 패널</div>
+      <div id="admin-user-list"><div class="empty-ranking">불러오는 중…</div></div>
+    </div>
+  </div>
+
+  <!-- 프로필 탭 -->
+  <div id="tab-profile" style="display:none">
+    <div class="profile-wrap" id="profile-content"></div>
+  </div>
+
+</div>
+
+<!-- 밴 모달 -->
+
+<!-- 밴 오버레이 -->
+<div class="ban-overlay" id="ban-overlay" style="display:none">
+  <div class="ban-overlay-icon">🚫</div>
+  <div class="ban-overlay-title">접속이 차단되었습니다</div>
+  <div class="ban-overlay-reason" id="ban-overlay-reason"></div>
+  <div class="ban-overlay-exp" id="ban-overlay-exp"></div>
+</div>
+
+<div class="ban-modal" id="ban-modal" style="display:none">
+  <div class="ban-modal-box">
+    <div class="ban-modal-title">🚫 유저 밴: <span id="ban-target-name"></span></div>
+    <input class="ban-input" id="ban-reason" placeholder="밴 사유" />
+    <select class="ban-select" id="ban-type" onchange="toggleDuration()">
+      <option value="permanent">영구 밴</option>
+      <option value="temp">시간 밴</option>
+    </select>
+    <input class="ban-input" id="ban-duration" placeholder="시간 입력 (예: 24)" type="number" style="display:none" />
+    <div class="ban-modal-btns">
+      <button class="cta-btn" style="flex:1" onclick="submitBan()">밴 실행</button>
+      <button class="action-back" onclick="closeBanModal()">취소</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+// ── 상수 ──────────────────────────────────────────────────────────
+const GRADES=[
+  {id:'e1',label:'초1'},{id:'e2',label:'초2'},{id:'e3',label:'초3'},
+  {id:'e4',label:'초4'},{id:'e5',label:'초5'},{id:'e6',label:'초6'},
+  {id:'m1',label:'중1'},{id:'m2',label:'중2'},{id:'m3',label:'중3'},
+  {id:'h1',label:'고1'},{id:'h2',label:'고2'},{id:'h3',label:'고3'},
+];
+const RANGE={elem:['e1','e2','e3','e4','e5','e6'],mid:['m1','m2','m3'],high:['h1','h2','h3'],all:GRADES.map(g=>g.id),none:[]};
+
+// ── 상태 ──────────────────────────────────────────────────────────
+let selected=new Set(),score=0,streak=0,total=0,correct=0,qNum=0;
+let curAnswer=null,curType='mcq',curFeedback=null;
+let authToken=localStorage.getItem('auth_token')||null;
+let currentUser=null;
+const API='https://mathert.pages.dev';
+
+// ── 유틸 ──────────────────────────────────────────────────────────
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function rndNZ(a,b){let v;do{v=rnd(a,b);}while(v===0);return v;}
+function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;}
+function lcm(a,b){return Math.abs(a*b)/gcd(a,b);}
+function comb(n,r){if(r>n||r<0)return 0;if(r===0||r===n)return 1;let res=1;for(let i=0;i<Math.min(r,n-r);i++){res=res*(n-i)/(i+1);}return Math.round(res);}
+function simplify(n,d){const g=gcd(Math.abs(n),Math.abs(d));return[n/g,d/g];}
+
+// ── 문제 생성기 ───────────────────────────────────────────────────
+// 각 생성기는 {question, answer, unit, steps, concept, type} 반환
+// steps: [{title, calc, desc}]
+
+const GENERATORS = {
+
+  // ════════════════════════════════════════
   // 초등학교
   // ════════════════════════════════════════
 
